@@ -1,0 +1,142 @@
+<body>
+  <main id="prompt-constructor-iy">
+    <div class="iy-shell">
+      <section class="iy-hero" aria-label="Описание конструктора">
+        <div class="iy-label">Конструктор промптов для интерактивных HTML-игр</div>
+        <h1>Соберите промпт для нейросети за несколько шагов</h1>
+        <p>Выберите игровую механику, задайте параметры урока, добавьте обратную связь и вовлечение. В любом списке можно выбрать готовый вариант или вписать свой. Промпт собирается сразу, его останется скопировать и вставить в нейросеть.</p>
+      </section>
+
+      <div class="iy-grid">
+
+        <section class="iy-section" id="iy-step-1">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">1</span>
+              <div>
+                <h2>Выберите основную механику</h2>
+                <p class="iy-help" id="iy-mech-help"></p>
+              </div>
+            </div>
+            <div class="iy-tools">
+              <input class="iy-search" id="iy-search" type="search" placeholder="Поиск: викторина, пары, лабиринт…" aria-label="Поиск механики" />
+            </div>
+          </div>
+          <div class="iy-categories" id="iy-categories" role="group" aria-label="Категории механик"></div>
+          <div class="iy-cards" id="iy-mechanics" role="radiogroup" aria-label="Список механик"></div>
+        </section>
+
+        <section class="iy-section" id="iy-step-2">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">2</span>
+              <div>
+                <h2>Заполните основу игры</h2>
+                <p class="iy-help">Предмет, класс, тема и параметры выбранной механики. Любой выпадающий список можно заменить своим текстом — выберите «✍️ Свой вариант».</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-summary" id="iy-summary"></div>
+          <div class="iy-note">💡 В каждом выпадающем списке последний пункт — <b>«✍️ Свой вариант»</b>. Выберите его, и появится поле, куда можно вписать что угодно своими словами. В текстовых полях примеры выпадают при нажатии.</div>
+          <div class="iy-form-grid" id="iy-basic-fields"></div>
+          <h3 style="margin:20px 0 10px;color:var(--iy-dark);font-size:17px;" id="iy-mech-fields-title">Параметры механики</h3>
+          <div class="iy-form-grid" id="iy-mechanic-fields"></div>
+        </section>
+
+        <section class="iy-section" id="iy-step-3">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">3</span>
+              <div>
+                <h2>Выберите обратную связь</h2>
+                <p class="iy-help">Как игра реагирует на действия ученика. Показываются только блоки, подходящие выбранной механике. Можно ничего не выбирать.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-note">💡 В каждом выпадающем списке последний пункт — <b>«✍️ Свой вариант»</b>. Выберите его, и появится поле, куда можно вписать что угодно своими словами. В текстовых полях примеры выпадают при нажатии.</div>
+          <div class="iy-presets" id="iy-presets"></div>
+          <div id="iy-feedback-list" class="iy-options"></div>
+        </section>
+
+        <section class="iy-section" id="iy-step-4">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">4</span>
+              <div>
+                <h2>Выберите вовлечение</h2>
+                <p class="iy-help">Что удерживает интерес: время, жизни, награды, сюжет, соревнование. Блоки не обязательны.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-note">💡 В каждом выпадающем списке последний пункт — <b>«✍️ Свой вариант»</b>. Выберите его, и появится поле, куда можно вписать что угодно своими словами. В текстовых полях примеры выпадают при нажатии.</div>
+          <div id="iy-engagement-list" class="iy-options"></div>
+        </section>
+
+        <section class="iy-section" id="iy-step-5">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">5</span>
+              <div>
+                <h2>Настройте визуальный стиль</h2>
+                <p class="iy-help">Этот блок заставляет нейросеть менять всю визуальную систему игры: фон, карточки, декор, палитру и атмосферу, а не только цвет кнопок.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-note">💡 В каждом выпадающем списке последний пункт — <b>«✍️ Свой вариант»</b>. Выберите его, и появится поле, куда можно вписать что угодно своими словами. В текстовых полях примеры выпадают при нажатии.</div>
+          <div class="iy-form-grid" id="iy-visual-fields"></div>
+        </section>
+
+        <section class="iy-section" id="iy-step-6">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">6</span>
+              <div>
+                <h2>Дополнительные условия</h2>
+                <p class="iy-help">Всё, что важно именно вам: свои задания и тексты, крупный шрифт, ссылки на изображения, ограничения по стилю.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-presets" id="iy-extra-presets"></div>
+          <textarea id="iy-extra" placeholder="Например: используй мои задания — 1) …, 2) …; сделай очень крупные кнопки для интерактивной доски; не используй красный цвет."></textarea>
+        </section>
+
+        <section class="iy-section" id="iy-step-7">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">7</span>
+              <div>
+                <h2>Готовый промпт</h2>
+                <p class="iy-help">Промпт обновляется сам при любом изменении. Скопируйте его и вставьте в нейросеть.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-warnings" id="iy-warnings" role="status" aria-live="polite"></div>
+          <textarea class="iy-output" id="iy-output" readonly aria-label="Готовый промпт"></textarea>
+          <div class="iy-actions">
+            <button class="iy-btn iy-primary" id="iy-copy" type="button">Скопировать промпт</button>
+            <button class="iy-btn iy-secondary" id="iy-download" type="button">Скачать .txt</button>
+            <button class="iy-btn iy-ghost" id="iy-share" type="button">Ссылка на сборку</button>
+            <button class="iy-btn iy-danger" id="iy-clear" type="button">Очистить всё</button>
+            <span class="iy-status" id="iy-status" role="status" aria-live="polite"></span>
+          </div>
+          <p class="iy-hint" id="iy-size"></p>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="iy-sticky">
+      <div class="iy-sticky-in">
+        <div class="iy-sticky-text">
+          <b id="iy-sticky-mech">—</b>
+          <span id="iy-sticky-meta"></span>
+        </div>
+        <button class="iy-btn iy-ghost" id="iy-sticky-top" type="button">↑ К механикам</button>
+        <button class="iy-btn iy-primary" id="iy-sticky-copy" type="button">Скопировать промпт</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      'use strict';

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Конструктор промптов для HTML-игр</title>
+  <style>
+    :root {
+      --iy-dark: #4C2670;
+      --iy-dark-2: #6A3A93;
+      --iy-bg: #F4F1FA;
+      --iy-accent: #FFC845;
+      --iy-text: #1F1F1F;
+      --iy-lilac: #C6A5E1;
+      --iy-white: #ffffff;
+      --iy-border: rgba(76, 38, 112, .18);
+      --iy-shadow: 0 18px 42px rgba(76, 38, 112, .16);
+      --iy-radius: 22px;
+      --iy-ok: #1B7F4B;
+      --iy-warn: #9A5B00;
+      --iy-warn-bg: #FFF4DC;
+    }
+
+    html, body { margin: 0; padding: 0; }
+
+    #prompt-constructor-iy,
+    #prompt-constructor-iy * {
+      box-sizing: border-box;
+    }
+
+    #prompt-constructor-iy {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--iy-text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 200, 69, .32), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(198, 165, 225, .65), transparent 34%),
+        var(--iy-bg);
+      padding: clamp(18px, 3vw, 38px);
+      padding-bottom: 120px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      line-height: 1.45;
+    }
+
+    #prompt-constructor-iy .iy-shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    /* ---------- hero ---------- */
+
+    #prompt-constructor-iy .iy-hero {
+      background: linear-gradient(135deg, var(--iy-dark), var(--iy-dark-2));
+      color: var(--iy-white);
+      border-radius: 30px;
+      padding: clamp(22px, 4vw, 42px);
+      box-shadow: var(--iy-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #prompt-constructor-iy .iy-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -100px auto;
+      width: 280px;
+      height: 280px;
+      background: var(--iy-accent);
+      border-radius: 50%;
+      opacity: .34;
+    }
+
+    #prompt-constructor-iy .iy-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 200, 69, .18);
+      color: var(--iy-accent);
+      border: 1px solid rgba(255, 200, 69, .55);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    #prompt-constructor-iy h1,
+    #prompt-constructor-iy h2,
+    #prompt-constructor-iy h3 {
+      margin: 0;
+      line-height: 1.16;
+    }
+
+    #prompt-constructor-iy h1 {
+      max-width: 840px;
+      font-size: clamp(28px, 5vw, 52px);
+      letter-spacing: -.03em;
+    }
+
+    #prompt-constructor-iy .iy-hero p {
+      max-width: 760px;
+      font-size: clamp(16px, 2vw, 19px);
+      margin: 16px 0 0;
+      opacity: .92;
+    }
+
+    /* ---------- layout ---------- */
+
+    #prompt-constructor-iy .iy-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    #prompt-constructor-iy .iy-section {
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--iy-border);
+      border-radius: var(--iy-radius);
+      padding: clamp(18px, 3vw, 28px);
+      box-shadow: 0 12px 30px rgba(76, 38, 112, .08);
+      scroll-margin-top: 16px;
+    }
+
+    #prompt-constructor-iy .iy-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    #prompt-constructor-iy .iy-step {
+      min-width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: var(--iy-accent);
+      color: var(--iy-text);
+      font-weight: 800;
+      box-shadow: 0 8px 0 rgba(76, 38, 112, .14);
+    }
+
+    #prompt-constructor-iy .iy-section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #prompt-constructor-iy .iy-section-title h2 {
+      color: var(--iy-dark);
+      font-size: clamp(21px, 3vw, 30px);
+    }
+
+    #prompt-constructor-iy .iy-help {
+      color: rgba(31, 31, 31, .78);
+      margin: 8px 0 0;
+      font-size: 15px;
+    }
+
+    #prompt-constructor-iy .iy-tools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    /* ---------- search + chips ---------- */
+
+    #prompt-constructor-iy .iy-search {
+      width: min(320px, 100%);
+      border: 2px solid rgba(76, 38, 112, .16);
+      background: var(--iy-white);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    #prompt-constructor-iy .iy-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    #prompt-constructor-iy .iy-chip {
+      border: 1px solid var(--iy-border);
+      background: #fff;
+      color: var(--iy-dark);
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: inherit;
+      font-size: 14px;
+      transition: .18s ease;
+    }
+
+    #prompt-constructor-iy .iy-chip:hover,
+    #prompt-constructor-iy .iy-chip.is-active {
+      background: var(--iy-dark);
+      color: var(--iy-white);
+    }
+
+    #prompt-constructor-iy .iy-chip-count {
+      opacity: .6;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    /* ---------- mechanic cards ---------- */
+
+    #prompt-constructor-iy .iy-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #prompt-constructor-iy .iy-card {
+      border: 2px solid rgba(76, 38, 112, .12);
+      background: linear-gradient(180deg, #fff, #fbf9ff);
+      border-radius: 18px;
+      padding: 16px;
+      cursor: pointer;
+      min-height: 176px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: .2s ease;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+    }
+
+    #prompt-constructor-iy .iy-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(76, 38, 112, .12);
+      border-color: rgba(76, 38, 112, .3);
+    }
+
+    #prompt-constructor-iy .iy-card.is-selected {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .22), 0 16px 34px rgba(76, 38, 112, .15);
+      background: linear-gradient(180deg, #fffaf0, #fff);
+    }
+
+    #prompt-constructor-iy .iy-card-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #prompt-constructor-iy .iy-card-number {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: var(--iy-white);
+      background: var(--iy-dark);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-card.is-selected .iy-card-number {
+      background: var(--iy-accent);
+      color: var(--iy-text);
+    }
+
+    #prompt-constructor-iy .iy-card-tick {
+      margin-left: auto;
+      font-size: 18px;
+      color: var(--iy-dark);
+      opacity: 0;
+    }
+
+    #prompt-constructor-iy .iy-card.is-selected .iy-card-tick { opacity: 1; }
+
+    #prompt-constructor-iy .iy-card h3 {
+      color: var(--iy-dark);
+      font-size: 17px;
+    }
+
+    #prompt-constructor-iy .iy-card p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(31,31,31,.78);
+    }
+
+    #prompt-constructor-iy .iy-meta {
+      margin-top: auto;
+      display: inline-flex;
+      color: var(--iy-dark);
+      background: rgba(198, 165, 225, .25);
+      border: 1px solid rgba(198, 165, 225, .5);
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    /* ---------- forms ---------- */
+
+    #prompt-constructor-iy .iy-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #prompt-constructor-iy .iy-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    #prompt-constructor-iy label {
+      font-weight: 800;
+      color: var(--iy-dark);
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy input,
+    #prompt-constructor-iy select,
+    #prompt-constructor-iy textarea {
+      width: 100%;
+      border: 2px solid rgba(76, 38, 112, .15);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--iy-text);
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    #prompt-constructor-iy textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    #prompt-constructor-iy input:focus,
+    #prompt-constructor-iy select:focus,
+    #prompt-constructor-iy textarea:focus {
+      outline: none;
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .28);
+    }
+
+    #prompt-constructor-iy .iy-card:focus-visible,
+    #prompt-constructor-iy .iy-chip:focus-visible,
+    #prompt-constructor-iy .iy-btn:focus-visible,
+    #prompt-constructor-iy .iy-preset:focus-visible,
+    #prompt-constructor-iy input:focus-visible,
+    #prompt-constructor-iy select:focus-visible,
+    #prompt-constructor-iy textarea:focus-visible {
+      outline: 3px solid var(--iy-dark);
+      outline-offset: 2px;
+    }
+
+    #prompt-constructor-iy .iy-hint {
+      font-size: 13px;
+      color: rgba(31,31,31,.66);
+    }
+
+    /* "выбор + вписать своё" */
+    #prompt-constructor-iy .iy-custom {
+      display: none;
+      margin-top: 7px;
+    }
+
+    #prompt-constructor-iy .iy-custom.is-on { display: block; }
+
+    #prompt-constructor-iy .iy-custom input {
+      border-color: var(--iy-accent);
+      background: #FFFDF7;
+    }
+
+    #prompt-constructor-iy .iy-own-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--iy-warn);
+      margin-bottom: 4px;
+    }
+
+    #prompt-constructor-iy .iy-combo-note {
+      font-size: 12px;
+      color: rgba(31,31,31,.6);
+      margin-top: 2px;
+    }
+
+    /* ---------- option blocks ---------- */
+
+    #prompt-constructor-iy .iy-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #prompt-constructor-iy .iy-option {
+      border: 2px solid rgba(76, 38, 112, .13);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    #prompt-constructor-iy .iy-option.is-open {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 3px rgba(255, 200, 69, .18);
+    }
+
+    #prompt-constructor-iy .iy-option-head {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    #prompt-constructor-iy .iy-option-head input[type="checkbox"] {
+      width: 20px;
+      min-width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--iy-dark);
+      box-shadow: none;
+      padding: 0;
+    }
+
+    #prompt-constructor-iy .iy-option-title {
+      font-weight: 900;
+      color: var(--iy-dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    #prompt-constructor-iy .iy-option-desc {
+      display: block;
+      color: rgba(31,31,31,.74);
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-option-fields {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(76, 38, 112, .22);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    #prompt-constructor-iy .iy-option.is-open .iy-option-fields {
+      display: grid;
+    }
+
+    /* ---------- presets ---------- */
+
+    #prompt-constructor-iy .iy-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    #prompt-constructor-iy .iy-preset {
+      border: 2px solid rgba(76, 38, 112, .16);
+      background: #fff;
+      color: var(--iy-dark);
+      border-radius: 14px;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      font-family: inherit;
+      transition: .18s ease;
+    }
+
+    #prompt-constructor-iy .iy-preset:hover {
+      background: var(--iy-lilac);
+      border-color: var(--iy-dark);
+    }
+
+    /* ---------- misc ---------- */
+
+    #prompt-constructor-iy .iy-note {
+      background: rgba(255, 200, 69, .2);
+      border: 1px solid rgba(255, 200, 69, .8);
+      border-radius: 16px;
+      padding: 14px;
+      color: var(--iy-dark);
+      font-weight: 700;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-warnings {
+      display: none;
+      background: var(--iy-warn-bg);
+      border: 2px solid rgba(255, 200, 69, .9);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    #prompt-constructor-iy .iy-warnings.is-on { display: block; }
+
+    #prompt-constructor-iy .iy-warnings b {
+      color: var(--iy-warn);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    #prompt-constructor-iy .iy-warnings ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-warnings li { margin: 3px 0; }
+
+    #prompt-constructor-iy .iy-summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--iy-dark), var(--iy-dark-2));
+      color: var(--iy-white);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-summary b { color: var(--iy-accent); }
+
+    #prompt-constructor-iy .iy-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    #prompt-constructor-iy button.iy-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 15px;
+      font-family: inherit;
+      transition: .18s ease;
+    }
+
+    #prompt-constructor-iy .iy-primary {
+      background: var(--iy-accent);
+      color: var(--iy-text);
+      box-shadow: 0 8px 0 rgba(76, 38, 112, .22);
+    }
+
+    #prompt-constructor-iy .iy-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 0 rgba(76, 38, 112, .22);
+    }
+
+    #prompt-constructor-iy .iy-secondary {
+      background: var(--iy-dark);
+      color: var(--iy-white);
+    }
+
+    #prompt-constructor-iy .iy-ghost {
+      background: #fff;
+      color: var(--iy-dark);
+      border: 2px solid rgba(76, 38, 112, .18) !important;
+    }
+
+    #prompt-constructor-iy .iy-danger {
+      background: #fff;
+      color: #A32222;
+      border: 2px solid rgba(163, 34, 34, .35) !important;
+    }
+
+    #prompt-constructor-iy .iy-output {
+      min-height: 320px;
+      font-family: Arial, Helvetica, sans-serif;
+      white-space: pre-wrap;
+      background: #FCFBFF;
+    }
+
+    #prompt-constructor-iy .iy-status {
+      min-height: 22px;
+      color: var(--iy-ok);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-empty {
+      border: 1px dashed rgba(76, 38, 112, .28);
+      background: rgba(255,255,255,.62);
+      border-radius: 16px;
+      padding: 16px;
+      color: rgba(31,31,31,.72);
+      grid-column: 1 / -1;
+    }
+
+    /* ---------- sticky bar ---------- */
+
+    #prompt-constructor-iy .iy-sticky {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      background: rgba(255,255,255,.97);
+      border-top: 2px solid var(--iy-border);
+      box-shadow: 0 -8px 24px rgba(76, 38, 112, .12);
+      padding: 10px clamp(12px, 3vw, 24px);
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+
+    #prompt-constructor-iy .iy-sticky-in {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #prompt-constructor-iy .iy-sticky-text {
+      flex: 1 1 200px;
+      min-width: 0;
+      font-size: 13px;
+      color: rgba(31,31,31,.8);
+      font-weight: 700;
+    }
+
+    #prompt-constructor-iy .iy-sticky-text b {
+      color: var(--iy-dark);
+      display: block;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #prompt-constructor-iy .iy-sticky button {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+    /* ---------- responsive ---------- */
+
+    @media (max-width: 1080px) {
+      #prompt-constructor-iy .iy-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 920px) {
+      #prompt-constructor-iy .iy-cards,
+      #prompt-constructor-iy .iy-options,
+      #prompt-constructor-iy .iy-form-grid {
+        grid-template-columns: 1fr;
+      }
+      #prompt-constructor-iy .iy-section-head {
+        flex-direction: column;
+      }
+      #prompt-constructor-iy .iy-tools {
+        width: 100%;
+        justify-content: stretch;
+      }
+      #prompt-constructor-iy .iy-search {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 540px) {
+      #prompt-constructor-iy {
+        padding: 12px;
+        padding-bottom: 140px;
+      }
+      #prompt-constructor-iy .iy-hero { border-radius: 22px; }
+      #prompt-constructor-iy .iy-section { padding: 16px; }
+      #prompt-constructor-iy .iy-option-fields { grid-template-columns: 1fr; }
+      #prompt-constructor-iy .iy-actions button.iy-btn { width: 100%; }
+      #prompt-constructor-iy .iy-output { min-height: 240px; }
+
+      /* компактная нижняя панель: имя механики + две кнопки в один ряд */
+      #prompt-constructor-iy .iy-hero h1 { font-size: 26px; }
+      #prompt-constructor-iy .iy-hero p { font-size: 15px; margin-top: 10px; }
+      #prompt-constructor-iy .iy-sticky { padding: 8px 12px; }
+      #prompt-constructor-iy .iy-sticky-in { gap: 8px; }
+      #prompt-constructor-iy .iy-sticky-text { flex: 1 1 100%; }
+      #prompt-constructor-iy #iy-sticky-meta { display: none; }
+      #prompt-constructor-iy .iy-sticky button { flex: 1 1 0; padding: 12px 6px; font-size: 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #prompt-constructor-iy *,
+      #prompt-constructor-iy *::before,
+      #prompt-constructor-iy *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+      #prompt-constructor-iy .iy-card:hover,
+      #prompt-constructor-iy .iy-primary:hover { transform: none; }
+    }
+  </style>
+</head>
