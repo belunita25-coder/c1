@@ -1,0 +1,3045 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Конструктор промптов для HTML-игр</title>
+  <style>
+    :root {
+      --iy-dark: #4C2670;
+      --iy-bg: #F4F1FA;
+      --iy-accent: #FFC845;
+      --iy-text: #1F1F1F;
+      --iy-lilac: #C6A5E1;
+      --iy-white: #ffffff;
+      --iy-border: rgba(76, 38, 112, .18);
+      --iy-shadow: 0 18px 42px rgba(76, 38, 112, .16);
+      --iy-radius: 22px;
+    }
+
+    #prompt-constructor-iy,
+    #prompt-constructor-iy * {
+      box-sizing: border-box;
+    }
+
+    #prompt-constructor-iy {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--iy-text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 200, 69, .32), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(198, 165, 225, .65), transparent 34%),
+        var(--iy-bg);
+      padding: clamp(18px, 3vw, 38px);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    #prompt-constructor-iy .iy-shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    #prompt-constructor-iy .iy-hero {
+      background: linear-gradient(135deg, var(--iy-dark), #6A3A93);
+      color: var(--iy-white);
+      border-radius: 30px;
+      padding: clamp(22px, 4vw, 42px);
+      box-shadow: var(--iy-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #prompt-constructor-iy .iy-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -100px auto;
+      width: 280px;
+      height: 280px;
+      background: var(--iy-accent);
+      border-radius: 50%;
+      opacity: .34;
+    }
+
+    #prompt-constructor-iy .iy-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 200, 69, .18);
+      color: var(--iy-accent);
+      border: 1px solid rgba(255, 200, 69, .55);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    #prompt-constructor-iy h1,
+    #prompt-constructor-iy h2,
+    #prompt-constructor-iy h3 {
+      margin: 0;
+      line-height: 1.16;
+    }
+
+    #prompt-constructor-iy h1 {
+      max-width: 840px;
+      font-size: clamp(28px, 5vw, 52px);
+      letter-spacing: -.03em;
+    }
+
+    #prompt-constructor-iy .iy-hero p {
+      max-width: 760px;
+      font-size: clamp(16px, 2vw, 19px);
+      margin: 16px 0 0;
+      opacity: .92;
+    }
+
+    #prompt-constructor-iy .iy-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    #prompt-constructor-iy .iy-section {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--iy-border);
+      border-radius: var(--iy-radius);
+      padding: clamp(18px, 3vw, 28px);
+      box-shadow: 0 12px 30px rgba(76, 38, 112, .08);
+      backdrop-filter: blur(10px);
+    }
+
+    #prompt-constructor-iy .iy-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    #prompt-constructor-iy .iy-step {
+      min-width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: var(--iy-accent);
+      color: var(--iy-text);
+      font-weight: 800;
+      box-shadow: 0 8px 0 rgba(76, 38, 112, .14);
+    }
+
+    #prompt-constructor-iy .iy-section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #prompt-constructor-iy .iy-section-title h2 {
+      color: var(--iy-dark);
+      font-size: clamp(21px, 3vw, 30px);
+    }
+
+    #prompt-constructor-iy .iy-help {
+      color: rgba(31, 31, 31, .72);
+      margin: 8px 0 0;
+      font-size: 15px;
+    }
+
+    #prompt-constructor-iy .iy-tools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    #prompt-constructor-iy .iy-search {
+      width: min(320px, 100%);
+      border: 2px solid rgba(76, 38, 112, .16);
+      background: var(--iy-white);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    #prompt-constructor-iy .iy-search:focus,
+    #prompt-constructor-iy input:focus,
+    #prompt-constructor-iy select:focus,
+    #prompt-constructor-iy textarea:focus {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .23);
+    }
+
+    #prompt-constructor-iy .iy-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    #prompt-constructor-iy .iy-chip {
+      border: 1px solid var(--iy-border);
+      background: #fff;
+      color: var(--iy-dark);
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+
+    #prompt-constructor-iy .iy-chip:hover,
+    #prompt-constructor-iy .iy-chip.is-active {
+      background: var(--iy-dark);
+      color: var(--iy-white);
+      transform: translateY(-1px);
+    }
+
+    #prompt-constructor-iy .iy-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #prompt-constructor-iy .iy-card {
+      border: 2px solid rgba(76, 38, 112, .12);
+      background: linear-gradient(180deg, #fff, #fbf9ff);
+      border-radius: 18px;
+      padding: 16px;
+      cursor: pointer;
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #prompt-constructor-iy .iy-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(76, 38, 112, .12);
+      border-color: rgba(76, 38, 112, .3);
+    }
+
+    #prompt-constructor-iy .iy-card.is-selected {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .22), 0 16px 34px rgba(76, 38, 112, .15);
+      background: linear-gradient(180deg, #fffaf0, #fff);
+    }
+
+    #prompt-constructor-iy .iy-card-number {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: var(--iy-white);
+      background: var(--iy-dark);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-card h3 {
+      color: var(--iy-dark);
+      font-size: 17px;
+    }
+
+    #prompt-constructor-iy .iy-card p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(31,31,31,.76);
+    }
+
+    #prompt-constructor-iy .iy-meta {
+      margin-top: auto;
+      display: inline-flex;
+      color: var(--iy-dark);
+      background: rgba(198, 165, 225, .25);
+      border: 1px solid rgba(198, 165, 225, .5);
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    #prompt-constructor-iy .iy-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #prompt-constructor-iy .iy-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    #prompt-constructor-iy label {
+      font-weight: 800;
+      color: var(--iy-dark);
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy input,
+    #prompt-constructor-iy select,
+    #prompt-constructor-iy textarea {
+      width: 100%;
+      border: 2px solid rgba(76, 38, 112, .15);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--iy-text);
+      outline: none;
+      transition: .18s ease;
+    }
+
+    #prompt-constructor-iy textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    #prompt-constructor-iy .iy-small {
+      font-size: 13px;
+      color: rgba(31,31,31,.65);
+    }
+
+    #prompt-constructor-iy .iy-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #prompt-constructor-iy .iy-option {
+      border: 2px solid rgba(76, 38, 112, .13);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    #prompt-constructor-iy .iy-option-head {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    #prompt-constructor-iy .iy-option-head input {
+      width: 19px;
+      min-width: 19px;
+      height: 19px;
+      margin-top: 2px;
+      accent-color: var(--iy-dark);
+      box-shadow: none;
+    }
+
+    #prompt-constructor-iy .iy-option-title {
+      font-weight: 900;
+      color: var(--iy-dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    #prompt-constructor-iy .iy-option-desc {
+      display: block;
+      color: rgba(31,31,31,.7);
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-option-fields {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(76, 38, 112, .18);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    #prompt-constructor-iy .iy-option.is-open .iy-option-fields {
+      display: grid;
+    }
+
+    #prompt-constructor-iy .iy-note {
+      background: rgba(255, 200, 69, .2);
+      border: 1px solid rgba(255, 200, 69, .8);
+      border-radius: 16px;
+      padding: 14px;
+      color: var(--iy-dark);
+      font-weight: 700;
+    }
+
+    #prompt-constructor-iy .iy-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    #prompt-constructor-iy button.iy-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 15px;
+      font-family: inherit;
+      transition: .18s ease;
+    }
+
+    #prompt-constructor-iy .iy-primary {
+      background: var(--iy-accent);
+      color: var(--iy-text);
+      box-shadow: 0 8px 0 rgba(76, 38, 112, .22);
+    }
+
+    #prompt-constructor-iy .iy-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 0 rgba(76, 38, 112, .22);
+    }
+
+    #prompt-constructor-iy .iy-secondary {
+      background: var(--iy-dark);
+      color: var(--iy-white);
+    }
+
+    #prompt-constructor-iy .iy-ghost {
+      background: #fff;
+      color: var(--iy-dark);
+      border: 2px solid rgba(76, 38, 112, .18) !important;
+    }
+
+    #prompt-constructor-iy .iy-output {
+      min-height: 360px;
+      font-family: Arial, Helvetica, sans-serif;
+      white-space: pre-wrap;
+    }
+
+    #prompt-constructor-iy .iy-status {
+      min-height: 22px;
+      color: var(--iy-dark);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    #prompt-constructor-iy .iy-empty {
+      border: 1px dashed rgba(76, 38, 112, .28);
+      background: rgba(255,255,255,.62);
+      border-radius: 16px;
+      padding: 16px;
+      color: rgba(31,31,31,.68);
+    }
+
+    @media (max-width: 920px) {
+      #prompt-constructor-iy .iy-cards,
+      #prompt-constructor-iy .iy-options,
+      #prompt-constructor-iy .iy-form-grid {
+        grid-template-columns: 1fr;
+      }
+      #prompt-constructor-iy .iy-section-head {
+        flex-direction: column;
+      }
+      #prompt-constructor-iy .iy-tools {
+        width: 100%;
+        justify-content: stretch;
+      }
+      #prompt-constructor-iy .iy-search {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 540px) {
+      #prompt-constructor-iy {
+        padding: 12px;
+      }
+      #prompt-constructor-iy .iy-hero {
+        border-radius: 22px;
+      }
+      #prompt-constructor-iy .iy-section {
+        padding: 16px;
+      }
+      #prompt-constructor-iy .iy-option-fields {
+        grid-template-columns: 1fr;
+      }
+      #prompt-constructor-iy button.iy-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="prompt-constructor-iy">
+    <div class="iy-shell">
+      <section class="iy-hero" aria-label="Описание конструктора">
+        <div class="iy-label">Конструктор промптов для интерактивных HTML-игр</div>
+        <h1>Соберите промпт для нейросети за несколько шагов</h1>
+        <p>Выберите игровую механику, задайте параметры урока, добавьте подходящую обратную связь и вовлечение. В конце появится готовый промпт, который можно вставить в любую нейросеть для создания HTML-игры.</p>
+      </section>
+
+      <div class="iy-grid">
+        <section class="iy-section" id="iy-mechanics-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">1</span>
+              <div>
+                <h2>Выберите основную механику</h2>
+                <p class="iy-help">В конструкторе заложены 32 основные механики. Комбинированная игра из нескольких этапов сюда не добавлена.</p>
+              </div>
+            </div>
+            <div class="iy-tools">
+              <input class="iy-search" id="iy-search" type="search" placeholder="Поиск механики" aria-label="Поиск механики" />
+            </div>
+          </div>
+          <div class="iy-categories" id="iy-categories"></div>
+          <div class="iy-cards" id="iy-mechanics"></div>
+        </section>
+
+        <section class="iy-section" id="iy-basic-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">2</span>
+              <div>
+                <h2>Заполните основу игры</h2>
+                <p class="iy-help">Предмет, класс, тема и параметры выбранной механики.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-form-grid" id="iy-basic-fields"></div>
+          <div class="iy-form-grid" id="iy-mechanic-fields" style="margin-top:14px;"></div>
+        </section>
+
+        <section class="iy-section" id="iy-visual-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">3</span>
+              <div>
+                <h2>Настройте визуальный стиль</h2>
+                <p class="iy-help">Этот блок заставляет нейросеть менять не только цвет кнопок, а всю визуальную систему игры: фон, карточки, декор, палитру и атмосферу.</p>
+              </div>
+            </div>
+          </div>
+          <div class="iy-form-grid" id="iy-visual-fields"></div>
+        </section>
+
+        <section class="iy-section" id="iy-feedback-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">4</span>
+              <div>
+                <h2>Выберите обратную связь</h2>
+                <p class="iy-help">Показываются только блоки, которые подходят к выбранной механике. Можно ничего не выбирать.</p>
+              </div>
+            </div>
+          </div>
+          <div id="iy-feedback-list" class="iy-options"></div>
+        </section>
+
+        <section class="iy-section" id="iy-engagement-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">5</span>
+              <div>
+                <h2>Выберите вовлечение</h2>
+                <p class="iy-help">Эти блоки усиливают игру, но не обязательны. Можно оставить промпт без механик вовлечения.</p>
+              </div>
+            </div>
+          </div>
+          <div id="iy-engagement-list" class="iy-options"></div>
+        </section>
+
+        <section class="iy-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">6</span>
+              <div>
+                <h2>Дополнительные условия</h2>
+                <p class="iy-help">Напишите всё, что важно: без внешних картинок, крупный шрифт, мобильная версия, свои задания, ссылки на изображения, ограничения по стилю.</p>
+              </div>
+            </div>
+          </div>
+          <textarea id="iy-extra" placeholder="Например: сделай крупные кнопки, добавь адаптацию под телефон, не используй внешние библиотеки, все картинки нарисуй на CSS/SVG."></textarea>
+        </section>
+
+        <section class="iy-section">
+          <div class="iy-section-head">
+            <div class="iy-section-title">
+              <span class="iy-step">7</span>
+              <div>
+                <h2>Готовый промпт</h2>
+                <p class="iy-help">Нажмите кнопку, затем скопируйте текст и вставьте в нейросеть.</p>
+              </div>
+            </div>
+          </div>
+          <textarea class="iy-output" id="iy-output" readonly placeholder="Здесь появится готовый промпт."></textarea>
+          <div class="iy-actions">
+            <button class="iy-btn iy-primary" id="iy-generate" type="button">Создать промпт</button>
+            <button class="iy-btn iy-secondary" id="iy-copy" type="button">Скопировать промпт</button>
+            <button class="iy-btn iy-ghost" id="iy-clear" type="button">Очистить выбор</button>
+            <span class="iy-status" id="iy-status" role="status" aria-live="polite"></span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      'use strict';
+
+      const MECHANICS = [
+  {
+    "id": "m1",
+    "num": 1,
+    "category": "Механики выбора",
+    "title": "Один правильный ответ — викторина",
+    "short": "Ученик видит вопрос и выбирает один верный ответ из нескольких вариантов.",
+    "what": "один вопрос на экране, выбор одного правильного ответа, мгновенная реакция, переход к следующему вопросу",
+    "fields": [
+      {
+        "key": "questions",
+        "label": "Количество вопросов",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "variants",
+        "label": "Вариантов ответа",
+        "type": "number",
+        "value": "4"
+      },
+      {
+        "key": "layout",
+        "label": "Показ вопросов",
+        "type": "select",
+        "options": [
+          "один вопрос на экране",
+          "все вопросы на одной странице"
+        ],
+        "value": "один вопрос на экране"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру — викторину с одним правильным ответом.\nКоличество вопросов: {questions}.\nВариантов ответа: {variants}.\nПоказ вопросов: {layout}.\nСам придумай вопросы и ответы по теме и классу. Один вариант должен быть верным, остальные — правдоподобными ошибками.\nМеханика: ученик выбирает один ответ. Верный ответ засчитывается, неверный показывает реакцию и помогает понять ошибку. В конце — итоговый экран с результатом и кнопкой \"Играть снова\"."
+  },
+  {
+    "id": "m2",
+    "num": 2,
+    "category": "Механики выбора",
+    "title": "Несколько правильных ответов",
+    "short": "Из нескольких вариантов нужно отметить все верные.",
+    "what": "выбор нескольких вариантов, проверка полного набора, подсветка верных, неверных и пропущенных ответов",
+    "fields": [
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "4"
+      },
+      {
+        "key": "answers",
+        "label": "Вариантов в каждом задании",
+        "type": "text",
+        "value": "5–6 вариантов, 2–3 верных"
+      },
+      {
+        "key": "hintCount",
+        "label": "Подсказка о числе верных",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "нет"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру — задание с несколькими правильными ответами.\nКоличество заданий: {tasks}.\nВ каждом задании: {answers}.\nПодсказка \"верных ответов: N\": {hintCount}.\nСам придумай задания. Верные варианты должны быть не слишком очевидными, чтобы ученик думал и сравнивал.\nМеханика: ученик отмечает все подходящие варианты и нажимает \"Проверить\". Полный правильный набор даёт балл. После проверки показывай результат и пояснение."
+  },
+  {
+    "id": "m3",
+    "num": 3,
+    "category": "Механики выбора",
+    "title": "Правда или ложь",
+    "short": "Ученик оценивает утверждение: верно оно или нет.",
+    "what": "две большие кнопки, мгновенная реакция, короткие утверждения, автопереход или кнопка далее",
+    "fields": [
+      {
+        "key": "statements",
+        "label": "Количество утверждений",
+        "type": "number",
+        "value": "8"
+      },
+      {
+        "key": "explain",
+        "label": "Объяснение после ответа",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Правда или Ложь\".\nКоличество утверждений: {statements}.\nОбъяснение после ответа: {explain}.\nСам придумай утверждения по теме и классу. Примерно половина утверждений должна быть верной, половина — ложной. Ложные утверждения должны звучать правдоподобно, а не как очевидная ошибка.\nМеханика: две большие кнопки \"Правда\" и \"Ложь\". После выбора показывай реакцию, затем переход к следующему утверждению. В конце — итоговый экран."
+  },
+  {
+    "id": "m4",
+    "num": 4,
+    "category": "Механики выбора",
+    "title": "Выбери лишнее",
+    "short": "Из группы элементов нужно найти тот, который не подходит к остальным.",
+    "what": "группа слов или картинок, один лишний элемент, объяснение выбора",
+    "fields": [
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "elements",
+        "label": "Элементов в каждом задании",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "view",
+        "label": "Вид элементов",
+        "type": "select",
+        "options": [
+          "текст",
+          "картинки",
+          "текст + простые CSS/SVG-иконки"
+        ],
+        "value": "текст"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Выбери лишнее\".\nКоличество заданий: {tasks}.\nЭлементов в каждом задании: {elements}.\nВид элементов: {view}.\nСам придумай задания по теме и классу. В каждом задании одна позиция должна быть лишней. Лишнее не должно быть слишком очевидным.\nМеханика: ученик кликает на лишний элемент. При верном выборе элемент выделяется, остальные приглушаются, появляется объяснение. При неверном выборе игра даёт мягкую реакцию и предлагает подумать ещё."
+  },
+  {
+    "id": "m5",
+    "num": 5,
+    "category": "Механики выбора",
+    "title": "Вписать верный ответ",
+    "short": "Ученик вводит ответ с клавиатуры.",
+    "what": "поле ввода, проверка ответа, попытки, подсказка или показ правильного ответа",
+    "fields": [
+      {
+        "key": "taskType",
+        "label": "Тип задания",
+        "type": "select",
+        "options": [
+          "целое слово",
+          "пропущенные буквы",
+          "число",
+          "формула",
+          "короткий ответ"
+        ],
+        "value": "целое слово"
+      },
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "8"
+      },
+      {
+        "key": "attempts",
+        "label": "Попыток на задание",
+        "type": "select",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "без ограничений"
+        ],
+        "value": "без ограничений"
+      },
+      {
+        "key": "hint",
+        "label": "Подсказка после неверного ответа",
+        "type": "select",
+        "options": [
+          "нет",
+          "первая буква",
+          "часть решения",
+          "наводящий вопрос"
+        ],
+        "value": "нет"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру — задания с вводом ответа.\nТип задания: {taskType}.\nКоличество заданий: {tasks}.\nПопыток на задание: {attempts}.\nПодсказка после неверного ответа: {hint}.\nСам придумай задания по теме и классу. Для пропущенных букв обозначай пропуски знаком _.\nМеханика: ученик вводит ответ и нажимает \"Проверить\". Проверяй ответ без учёта регистра и лишних пробелов. После исчерпания попыток показывай правильный ответ. В конце — итоговый экран."
+  },
+  {
+    "id": "m6",
+    "num": 6,
+    "category": "Механики выбора",
+    "title": "Выбрать из предложенного",
+    "short": "В тексте есть пропуски, ученик выбирает подходящие слова из вариантов.",
+    "what": "варианты рядом с пропуском или над текстом, вставка ответа, проверка сразу или кнопкой",
+    "fields": [
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "placement",
+        "label": "Где показывать варианты",
+        "type": "select",
+        "options": [
+          "рядом с пропуском",
+          "над текстом",
+          "под текстом"
+        ],
+        "value": "над текстом"
+      },
+      {
+        "key": "check",
+        "label": "Проверка",
+        "type": "select",
+        "options": [
+          "сразу при выборе",
+          "кнопкой после всех"
+        ],
+        "value": "кнопкой после всех"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру — вставь слово из предложенных вариантов.\nКоличество заданий: {tasks}.\nВарианты показывай: {placement}.\nПроверка: {check}.\nСам придумай задания. Для каждого пропуска дай верный вариант и 2–3 похожих неверных. Неверные варианты должны быть правдоподобными.\nМеханика: ученик выбирает вариант, пропуск заполняется. Неверный ответ можно исправить. В конце — итоговый экран с баллами."
+  },
+  {
+    "id": "m7",
+    "num": 7,
+    "category": "Механики поиска",
+    "title": "Найди объект",
+    "short": "На экране много элементов, нужно найти и кликнуть все подходящие.",
+    "what": "поиск нужных элементов среди отвлекающих, счётчик найденного, победа после всех верных кликов",
+    "fields": [
+      {
+        "key": "elements",
+        "label": "Количество элементов на экране",
+        "type": "number",
+        "value": "20"
+      },
+      {
+        "key": "correct",
+        "label": "Из них верных",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "random",
+        "label": "Перемешивать при запуске",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Найди объект\".\nКоличество элементов на экране: {elements}.\nИз них верных: {correct}.\nПеремешивать элементы при каждом запуске: {random}.\nСам придумай элементы — верные и отвлекающие — по теме и классу.\nМеханика: ученик кликает по подходящим элементам. Верный клик остаётся отмеченным. Неверный клик показывает мягкую ошибку и исчезает через секунду. Счётчик показывает \"найдено X из Y\". Когда все найдены — победа."
+  },
+  {
+    "id": "m8",
+    "num": 8,
+    "category": "Механики поиска",
+    "title": "Найди ошибку",
+    "short": "В тексте или решении спрятана ошибка, ученик должен её найти.",
+    "what": "кликабельные слова или шаги, правило после ответа, исправление ошибки",
+    "fields": [
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "errorType",
+        "label": "Тип ошибок",
+        "type": "select",
+        "options": [
+          "орфография",
+          "пунктуация",
+          "математика",
+          "логика",
+          "фактическая ошибка"
+        ],
+        "value": "орфография"
+      },
+      {
+        "key": "rule",
+        "label": "Показывать правило после ответа",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Найди ошибку\".\nКоличество заданий: {tasks}.\nТип ошибок: {errorType}.\nПоказывать правило после ответа: {rule}.\nСам придумай задания с одной реальной ошибкой в каждом. Ошибка должна быть типичной для этой темы и возраста.\nМеханика: каждое слово, число или шаг решения кликабельны. Верный клик выделяет ошибку, показывает правильный вариант и пояснение. Неверный клик сообщает, что ошибка не здесь, и предлагает проверить внимательнее."
+  },
+  {
+    "id": "m9",
+    "num": 9,
+    "category": "Механики поиска",
+    "title": "Найди отличия",
+    "short": "Две похожие картинки или сцены, ученик находит отличия кликом.",
+    "what": "две области для сравнения, координаты отличий, отметка найденных зон",
+    "fields": [
+      {
+        "key": "differences",
+        "label": "Количество отличий",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "leftImage",
+        "label": "Левая картинка",
+        "type": "text",
+        "value": "создай простую сцену на CSS/SVG без внешних изображений"
+      },
+      {
+        "key": "rightImage",
+        "label": "Правая картинка",
+        "type": "text",
+        "value": "создай похожую сцену на CSS/SVG с отличиями"
+      },
+      {
+        "key": "hint30",
+        "label": "Подсказка через 30 секунд",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "нет"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Найди отличия\".\nКоличество отличий: {differences}.\nКартинка левая: {leftImage}.\nКартинка правая: {rightImage}.\nПодсказка через 30 секунд: {hint30}.\nЕсли используются картинки или сцены, задай координаты отличий. Если внешних изображений нет, нарисуй две простые похожие сцены средствами HTML/CSS/SVG.\nМеханика: клик проверяет попадание в зону отличия. Верно — отличие отмечается на обеих сценах. Промах — мягкая анимация без штрафа. Все найдены — победа."
+  },
+  {
+    "id": "m10",
+    "num": 10,
+    "category": "Механики поиска",
+    "title": "Найди скрытое слово / шифр / код",
+    "short": "Слова спрятаны в таблице букв или зашифрованы.",
+    "what": "филворд, шифр или код, выделение найденных слов, список слов сбоку",
+    "fields": [
+      {
+        "key": "format",
+        "label": "Формат",
+        "type": "select",
+        "options": [
+          "филворд",
+          "шифр",
+          "код",
+          "филворд + кодовое слово"
+        ],
+        "value": "филворд"
+      },
+      {
+        "key": "words",
+        "label": "Количество слов",
+        "type": "number",
+        "value": "7"
+      },
+      {
+        "key": "grid",
+        "label": "Размер таблицы",
+        "type": "select",
+        "options": [
+          "10x10",
+          "12x12",
+          "15x15"
+        ],
+        "value": "12x12"
+      },
+      {
+        "key": "directions",
+        "label": "Направления слов",
+        "type": "select",
+        "options": [
+          "горизонтально и вертикально",
+          "горизонтально, вертикально и по диагонали"
+        ],
+        "value": "горизонтально и вертикально"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Найди слова\".\nФормат: {format}.\nКоличество слов: {words}.\nРазмер таблицы: {grid}.\nНаправления слов: {directions}.\nСам придумай слова по теме и классу. Остальные клетки заполни случайными буквами.\nМеханика: ученик кликает на первую и последнюю букву слова. Найденное слово выделяется в таблице, а в списке сбоку вычёркивается. Когда найдены все слова — финальный экран."
+  },
+  {
+    "id": "m11",
+    "num": 11,
+    "category": "Механики поиска",
+    "title": "Найди правильный путь — лабиринт",
+    "short": "Персонаж идёт через лабиринт, на развилках выбирает ответы.",
+    "what": "развилки с вопросами, верный путь ведёт дальше, неверный — в тупик с объяснением",
+    "fields": [
+      {
+        "key": "forks",
+        "label": "Количество развилок с вопросами",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "character",
+        "label": "Персонаж",
+        "type": "text",
+        "value": "мышонок"
+      },
+      {
+        "key": "deadend",
+        "label": "Тупик объясняет ошибку",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру-лабиринт.\nКоличество развилок с вопросами: {forks}.\nПерсонаж: {character}.\nТупик объясняет ошибку: {deadend}.\nСам придумай вопросы по теме и классу. На каждой развилке должен быть верный и неверный путь.\nМеханика: верный путь продвигает персонажа дальше. Неверный путь ведёт в тупик, показывает объяснение и кнопку \"Вернуться\". Финиш — поздравление и результат."
+  },
+  {
+    "id": "m12",
+    "num": 12,
+    "category": "Механики сопоставления",
+    "title": "Найди пару — Memory",
+    "short": "Карточки закрыты, ученик переворачивает по две и ищет пары.",
+    "what": "переворот карточек, поиск пар, счётчик ходов, открытые совпадения",
+    "fields": [
+      {
+        "key": "pairs",
+        "label": "Количество пар",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "pairType",
+        "label": "Тип пар",
+        "type": "select",
+        "options": [
+          "слово + перевод",
+          "термин + определение",
+          "вопрос + ответ",
+          "картинка + слово",
+          "пример + ответ"
+        ],
+        "value": "слово + перевод"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Найди пару\" в формате Memory.\nКоличество пар: {pairs}.\nТип пар: {pairType}.\nСам придумай пары по теме и классу. Карточки должны перемешиваться случайно.\nМеханика: ученик открывает две карточки. Верная пара остаётся открытой и отмеченной. Неверная пара закрывается через 1 секунду. Покажи счётчик ходов. Когда все пары найдены — финальный экран."
+  },
+  {
+    "id": "m13",
+    "num": 13,
+    "category": "Механики сопоставления",
+    "title": "Соответствие",
+    "short": "Два столбика, нужно соединить элементы слева и справа.",
+    "what": "клик по левому элементу и правому элементу, проверка пары, линия соединения",
+    "fields": [
+      {
+        "key": "pairs",
+        "label": "Количество пар",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "left",
+        "label": "Левый столбик",
+        "type": "text",
+        "value": "понятия"
+      },
+      {
+        "key": "right",
+        "label": "Правый столбик",
+        "type": "text",
+        "value": "определения"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Установи соответствие\".\nКоличество пар: {pairs}.\nЛевый столбик: {left}.\nПравый столбик: {right}.\nСам придумай пары по теме и классу. Правый столбик перемешай случайно.\nМеханика: ученик кликает элемент слева, затем подходящий элемент справа. Верно — появляется линия соединения, оба элемента блокируются. Неверно — выделение снимается, ученик пробует снова. Все пары соединены — итоговый экран."
+  },
+  {
+    "id": "m14",
+    "num": 14,
+    "category": "Механики сопоставления",
+    "title": "Соедини начало и конец",
+    "short": "Начала и окончания разрезаны, нужно собрать правильные пары.",
+    "what": "соединение половинок, уникальные окончания, возможное объяснение после пары",
+    "fields": [
+      {
+        "key": "pairs",
+        "label": "Количество пар",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "connect",
+        "label": "Что соединяем",
+        "type": "select",
+        "options": [
+          "пословицы",
+          "правила",
+          "определения",
+          "предложения",
+          "формулы",
+          "факты"
+        ],
+        "value": "предложения"
+      },
+      {
+        "key": "explain",
+        "label": "Объяснение после верного соединения",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "нет"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Соедини начало и конец\".\nКоличество пар: {pairs}.\nЧто соединяем: {connect}.\nОбъяснение после верного соединения: {explain}.\nСам придумай пары по теме и классу. Каждый конец должен подходить только к одному началу.\nМеханика: ученик выбирает начало, затем подходящий конец. Верная пара соединяется линией и блокируется. Если объяснение включено, показывай короткое пояснение после соединения."
+  },
+  {
+    "id": "m15",
+    "num": 15,
+    "category": "Механики сопоставления",
+    "title": "Соедини несколько частей — собери целое",
+    "short": "Части перемешаны, нужно собрать предложение, формулу или правило.",
+    "what": "клик по частям, зона сборки, проверка порядка, показ правильной сборки",
+    "fields": [
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "parts",
+        "label": "Количество частей",
+        "type": "text",
+        "value": "5–6"
+      },
+      {
+        "key": "collect",
+        "label": "Что собираем",
+        "type": "select",
+        "options": [
+          "предложение",
+          "формулу",
+          "правило",
+          "алгоритм",
+          "определение"
+        ],
+        "value": "предложение"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Собери из частей\".\nКоличество заданий: {tasks}.\nКоличество частей: {parts}.\nЧто собираем: {collect}.\nСам придумай задания по теме и классу. Части должны автоматически перемешиваться.\nМеханика: клик по части переносит её в зону сборки сверху. Клик в зоне сборки возвращает часть назад. Кнопка \"Проверить\" проверяет порядок. Верно — зелёная подсветка. Неверно — покажи правильный порядок."
+  },
+  {
+    "id": "m16",
+    "num": 16,
+    "category": "Механики сопоставления",
+    "title": "Соедини вопрос и ответ",
+    "short": "Вопросы в одном столбике, короткие ответы в другом.",
+    "what": "сопоставление вопросов и ответов, перемешивание ответов, проверка пар",
+    "fields": [
+      {
+        "key": "pairs",
+        "label": "Количество пар",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "questionType",
+        "label": "Характер вопросов",
+        "type": "select",
+        "options": [
+          "фактические — кто/что/когда",
+          "на понимание",
+          "на применение",
+          "смешанные"
+        ],
+        "value": "фактические — кто/что/когда"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Соедини вопрос и ответ\".\nКоличество пар: {pairs}.\nХарактер вопросов: {questionType}.\nСам придумай вопросы и короткие ответы по теме и классу. Каждый ответ должен подходить только к одному вопросу.\nМеханика: ученик соединяет вопрос с ответом. Верно — зелёная линия, пара блокируется. Неверно — мягкое покачивание и возможность попробовать снова. Все пары соединены — итоговый экран."
+  },
+  {
+    "id": "m17",
+    "num": 17,
+    "category": "Механики порядка",
+    "title": "Расставь по порядку",
+    "short": "Элементы перемешаны, их нужно выстроить в правильной последовательности.",
+    "what": "нумерация кликами, проверка порядка, подсветка верных и неверных позиций",
+    "fields": [
+      {
+        "key": "tasks",
+        "label": "Количество заданий",
+        "type": "number",
+        "value": "4"
+      },
+      {
+        "key": "elements",
+        "label": "Элементов в каждом",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "orderType",
+        "label": "Тип порядка",
+        "type": "select",
+        "options": [
+          "по возрастанию",
+          "алфавит",
+          "хронология",
+          "логика",
+          "этапы решения"
+        ],
+        "value": "логика"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Расставь по порядку\".\nКоличество заданий: {tasks}.\nЭлементов в каждом задании: {elements}.\nТип порядка: {orderType}.\nСам придумай задания по теме и классу. Элементы должны перемешиваться автоматически.\nМеханика: ученик нумерует элементы кликами. После нажатия \"Проверить\" верные позиции зеленеют, неверные отмечаются и показывается правильный порядок."
+  },
+  {
+    "id": "m18",
+    "num": 18,
+    "category": "Механики порядка",
+    "title": "Собери алгоритм",
+    "short": "Шаги алгоритма перемешаны, нужно восстановить последовательность.",
+    "what": "шаги слева, позиции справа, проверка алгоритма, объяснение шагов",
+    "fields": [
+      {
+        "key": "steps",
+        "label": "Количество шагов",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "explain",
+        "label": "Объяснение каждого шага после проверки",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Собери алгоритм\".\nКоличество шагов: {steps}.\nОбъяснение каждого шага после проверки: {explain}.\nСам придумай алгоритм по теме и классу. Шаги должны быть короткими, чёткими и однозначными.\nМеханика: шаги перемешаны слева, позиции для сборки справа. Ученик расставляет шаги и нажимает \"Проверить\". Верные позиции зеленеют, неверные краснеют, затем показывается правильный порядок."
+  },
+  {
+    "id": "m19",
+    "num": 19,
+    "category": "Механики порядка",
+    "title": "Хронология",
+    "short": "События нужно расположить на временной шкале.",
+    "what": "карточки событий, временная шкала, даты сразу или после проверки",
+    "fields": [
+      {
+        "key": "events",
+        "label": "Количество событий",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "scale",
+        "label": "Шкала",
+        "type": "select",
+        "options": [
+          "горизонтальная",
+          "вертикальная"
+        ],
+        "value": "горизонтальная"
+      },
+      {
+        "key": "datesVisible",
+        "label": "Даты видны сразу",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "нет"
+      },
+      {
+        "key": "datesAfter",
+        "label": "Дата появляется после проверки",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Хронология\".\nКоличество событий: {events}.\nШкала: {scale}.\nДаты видны сразу: {datesVisible}.\nДата появляется после проверки: {datesAfter}.\nСам придумай события по теме и классу. Каждое событие — короткая фраза.\nМеханика: ученик располагает события на шкале. После проверки верные позиции зеленеют, неверные отмечаются. Затем показываются даты и краткий итог."
+  },
+  {
+    "id": "m20",
+    "num": 20,
+    "category": "Механики порядка",
+    "title": "Шаги решения",
+    "short": "Ученик решает задачу пошагово, каждый шаг проверяется отдельно.",
+    "what": "условие сверху, шаги открываются по одному, ввод промежуточных ответов",
+    "fields": [
+      {
+        "key": "steps",
+        "label": "Количество шагов",
+        "type": "number",
+        "value": "4"
+      },
+      {
+        "key": "hint",
+        "label": "Подсказка при ошибке",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      },
+      {
+        "key": "units",
+        "label": "Единицы измерения рядом с полем",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "да"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Реши по шагам\".\nКоличество шагов: {steps}.\nПодсказка при ошибке: {hint}.\nЕдиницы измерения рядом с полем: {units}.\nСам придумай задачу по теме и классу и разбей решение на шаги. Каждый шаг должен находить один промежуточный результат.\nМеханика: условие всегда вверху. Шаги открываются по одному. Верный ответ открывает следующий шаг. Неверный ответ показывает подсказку. После всех шагов — итоговый ответ и поздравление."
+  },
+  {
+    "id": "m21",
+    "num": 21,
+    "category": "Механики порядка",
+    "title": "Уровни сложности",
+    "short": "Игра идёт по уровням: каждый следующий сложнее предыдущего.",
+    "what": "карта уровней, замки, звёзды или баллы, постепенное усложнение",
+    "fields": [
+      {
+        "key": "levels",
+        "label": "Количество уровней",
+        "type": "number",
+        "value": "3"
+      },
+      {
+        "key": "tasksPerLevel",
+        "label": "Заданий на уровень",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "inside",
+        "label": "Механика внутри уровня",
+        "type": "select",
+        "options": [
+          "викторина",
+          "ввод ответа",
+          "на время",
+          "выбор из предложенного",
+          "сопоставление"
+        ],
+        "value": "викторина"
+      },
+      {
+        "key": "assessment",
+        "label": "Оценка уровня",
+        "type": "select",
+        "options": [
+          "звёзды 1–3",
+          "баллы",
+          "процент"
+        ],
+        "value": "звёзды 1–3"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру с уровнями сложности.\nКоличество уровней: {levels}.\nЗаданий на уровень: {tasksPerLevel}.\nМеханика внутри уровня: {inside}.\nОценка уровня: {assessment}.\nУровень 1 — лёгкий, уровень 2 — средний, уровень 3 — сложный.\nМеханика: карта уровней. Первый уровень открыт сразу, остальные заблокированы. После прохождения уровня следующий открывается. Показывай результат за уровень и общий итог после всех уровней."
+  },
+  {
+    "id": "m22",
+    "num": 22,
+    "category": "Механики открытия",
+    "title": "Открывающиеся карточки",
+    "short": "Карточки закрыты, ученик открывает их и изучает материал.",
+    "what": "переворот карточки, лицевая и оборотная сторона, знаю/повторить",
+    "fields": [
+      {
+        "key": "cards",
+        "label": "Количество карточек",
+        "type": "number",
+        "value": "8"
+      },
+      {
+        "key": "front",
+        "label": "Лицевая сторона",
+        "type": "select",
+        "options": [
+          "термин",
+          "вопрос",
+          "слово",
+          "картинка/иконка"
+        ],
+        "value": "термин"
+      },
+      {
+        "key": "back",
+        "label": "Оборотная сторона",
+        "type": "select",
+        "options": [
+          "определение",
+          "ответ",
+          "перевод",
+          "пояснение"
+        ],
+        "value": "определение"
+      },
+      {
+        "key": "mode",
+        "label": "Режим",
+        "type": "select",
+        "options": [
+          "флэш-карточки",
+          "задание с самопроверкой"
+        ],
+        "value": "флэш-карточки"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Флэш-карточки\".\nКоличество карточек: {cards}.\nЛицевая сторона: {front}.\nОборотная сторона: {back}.\nРежим: {mode}.\nСам придумай карточки по теме и классу.\nМеханика: клик переворачивает карточку с анимацией. Кнопка \"Знаю\" убирает карточку, кнопка \"Повторить\" отправляет её в конец стопки. Показывай, сколько карточек осталось. Когда все изучены — поздравление."
+  },
+  {
+    "id": "m23",
+    "num": 23,
+    "category": "Механики открытия",
+    "title": "Скрытый объект — интерактивная сцена",
+    "short": "На сцене спрятаны кликабельные объекты с заданиями или фактами.",
+    "what": "CSS/SVG-сцена, пульсирующие точки, всплывающие задания, счётчик открытого",
+    "fields": [
+      {
+        "key": "scene",
+        "label": "Сцена",
+        "type": "text",
+        "value": "создай сцену по теме средствами CSS/SVG"
+      },
+      {
+        "key": "objects",
+        "label": "Количество кликабельных элементов",
+        "type": "number",
+        "value": "7"
+      },
+      {
+        "key": "opens",
+        "label": "Что открывается",
+        "type": "select",
+        "options": [
+          "задание",
+          "факт",
+          "вопрос с выбором",
+          "мини-пояснение"
+        ],
+        "value": "вопрос с выбором"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Интерактивная сцена\".\nСцена: {scene}.\nКоличество кликабельных элементов: {objects}.\nЧто открывается: {opens}.\nНарисуй сцену полностью на CSS/SVG, без внешних изображений, если пользователь не дал ссылки.\nСам придумай факты или задания для каждого элемента по теме и классу.\nМеханика: на объектах есть пульсирующие точки. Клик открывает всплывающее окно. После правильного ответа или просмотра точка становится отмеченной. Счётчик показывает \"открыто X из Y\"."
+  },
+  {
+    "id": "m24",
+    "num": 24,
+    "category": "Механики открытия",
+    "title": "Сюрприз — подарки",
+    "short": "Ученик открывает коробки, конверты или сундуки и получает задания или бонусы.",
+    "what": "закрытые подарки, анимация открытия, задания и бонусы внутри",
+    "fields": [
+      {
+        "key": "gifts",
+        "label": "Количество подарков",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "inside",
+        "label": "Что внутри",
+        "type": "select",
+        "options": [
+          "задания",
+          "задания + бонусы",
+          "факты + вопросы",
+          "подсказки + задания"
+        ],
+        "value": "задания + бонусы"
+      },
+      {
+        "key": "giftTheme",
+        "label": "Тема подарков",
+        "type": "select",
+        "options": [
+          "коробки",
+          "конверты",
+          "шары",
+          "сундучки",
+          "дверцы"
+        ],
+        "value": "сундучки"
+      },
+      {
+        "key": "context",
+        "label": "Контекст",
+        "type": "select",
+        "options": [
+          "Новый год",
+          "День знаний",
+          "день рождения",
+          "приключение",
+          "без контекста"
+        ],
+        "value": "приключение"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Сюрпризы\".\nКоличество подарков: {gifts}.\nЧто внутри: {inside}.\nТема подарков: {giftTheme}.\nКонтекст: {context}.\nСам придумай задания разной сложности по теме и классу.\nМеханика: ученик открывает подарки в любом порядке. После клика — анимация открытия и задание или бонус. Все подарки открыты — итоговый экран."
+  },
+  {
+    "id": "m25",
+    "num": 25,
+    "category": "Механики открытия",
+    "title": "Двери",
+    "short": "За дверями спрятаны задания, подсказки или части финального ответа.",
+    "what": "выбор двери, открытие содержимого, правильная дверь или все двери по очереди",
+    "fields": [
+      {
+        "key": "doors",
+        "label": "Количество дверей",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "behind",
+        "label": "Что за дверями",
+        "type": "select",
+        "options": [
+          "задания",
+          "подсказки",
+          "факты",
+          "части финального кода",
+          "вопросы"
+        ],
+        "value": "задания"
+      },
+      {
+        "key": "order",
+        "label": "Порядок открытия",
+        "type": "select",
+        "options": [
+          "в любом порядке",
+          "строго по порядку",
+          "следующая дверь открывается после ответа"
+        ],
+        "value": "следующая дверь открывается после ответа"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Двери\".\nКоличество дверей: {doors}.\nЧто за дверями: {behind}.\nПорядок открытия: {order}.\nСам придумай задания или материалы за каждой дверью по теме и классу.\nМеханика: ученик выбирает дверь, она открывается с анимацией и показывает содержимое. Если за дверью задание, после ответа дверь отмечается как пройденная. Когда все нужные двери открыты — финал."
+  },
+  {
+    "id": "m26",
+    "num": 26,
+    "category": "Механики случайности",
+    "title": "Рандомайзер",
+    "short": "Игра случайно выбирает задание, вопрос, карточку или действие.",
+    "what": "кнопка случайного выбора, элемент появляется на экране, без повторов или с повторами",
+    "fields": [
+      {
+        "key": "items",
+        "label": "Количество элементов в банке",
+        "type": "number",
+        "value": "12"
+      },
+      {
+        "key": "itemType",
+        "label": "Что выбирается",
+        "type": "select",
+        "options": [
+          "вопрос",
+          "задание",
+          "карточка",
+          "действие",
+          "тема для ответа"
+        ],
+        "value": "задание"
+      },
+      {
+        "key": "repeat",
+        "label": "Повторы",
+        "type": "select",
+        "options": [
+          "без повторов за сессию",
+          "можно повторять"
+        ],
+        "value": "без повторов за сессию"
+      }
+    ],
+    "prompt": "Создай интерактивный HTML-рандомайзер.\nКоличество элементов в банке: {items}.\nЧто выбирается: {itemType}.\nПовторы: {repeat}.\nСам придумай элементы по теме и классу.\nМеханика: кнопка \"Выбрать\" запускает случайный выбор. Выбранный элемент появляется крупно в центре экрана. Если повторы выключены, уже использованные элементы не показываются повторно в рамках одной сессии. Когда банк закончился — итоговый экран или кнопка \"Новая сессия\"."
+  },
+  {
+    "id": "m27",
+    "num": 27,
+    "category": "Механики случайности",
+    "title": "Колесо фортуны",
+    "short": "Ученик крутит колесо и получает случайный сектор с заданием.",
+    "what": "сектора колеса, анимация вращения, случайное задание после остановки",
+    "fields": [
+      {
+        "key": "sectors",
+        "label": "Количество секторов",
+        "type": "number",
+        "value": "8"
+      },
+      {
+        "key": "sectorType",
+        "label": "Что в секторах",
+        "type": "select",
+        "options": [
+          "вопросы",
+          "задания",
+          "категории",
+          "баллы",
+          "темы"
+        ],
+        "value": "задания"
+      },
+      {
+        "key": "used",
+        "label": "Использованные сектора",
+        "type": "select",
+        "options": [
+          "блокируются",
+          "могут выпадать снова"
+        ],
+        "value": "блокируются"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Колесо фортуны\".\nКоличество секторов: {sectors}.\nЧто в секторах: {sectorType}.\nИспользованные сектора: {used}.\nСам придумай содержание секторов по теме и классу.\nМеханика: ученик нажимает \"Крутить\", колесо вращается и останавливается на случайном секторе. После остановки открывается задание или действие. Использованные сектора отмечаются. В конце — результат."
+  },
+  {
+    "id": "m28",
+    "num": 28,
+    "category": "Механики случайности",
+    "title": "Случайный выбор задания — тренажёр",
+    "short": "Из банка заданий случайно выдаётся набор на одну сессию.",
+    "what": "банк заданий, случайная сессия, без повторов внутри сессии, новый набор при перезапуске",
+    "fields": [
+      {
+        "key": "bank",
+        "label": "Заданий в банке",
+        "type": "number",
+        "value": "10"
+      },
+      {
+        "key": "session",
+        "label": "Заданий за сессию",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "answerMode",
+        "label": "Механика ответа",
+        "type": "select",
+        "options": [
+          "ввод ответа",
+          "один правильный ответ",
+          "правда/ложь",
+          "выбор из вариантов"
+        ],
+        "value": "ввод ответа"
+      }
+    ],
+    "prompt": "Создай интерактивный HTML-тренажёр со случайными заданиями.\nЗаданий в банке: {bank}.\nЗаданий за сессию: {session}.\nМеханика ответа: {answerMode}.\nСам придумай задания разной сложности по теме и классу.\nМеханика: при запуске выбирается случайный набор без повторов. После ответа открывается следующее задание. В конце — итог: верных, неверных и баллы. Кнопка \"Новая сессия\" запускает другой набор из того же банка."
+  },
+  {
+    "id": "m29",
+    "num": 29,
+    "category": "Механики случайности",
+    "title": "Своя игра",
+    "short": "Игрок выбирает вопрос по категории и цене, отвечает и получает баллы.",
+    "what": "табло категорий и стоимости, использованные ячейки блокируются, счёт баллов",
+    "fields": [
+      {
+        "key": "categories",
+        "label": "Количество категорий",
+        "type": "number",
+        "value": "4"
+      },
+      {
+        "key": "questions",
+        "label": "Вопросов в категории",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "prices",
+        "label": "Цены вопросов",
+        "type": "text",
+        "value": "100, 200, 300, 400, 500"
+      },
+      {
+        "key": "scoreMode",
+        "label": "Баллы при ошибке",
+        "type": "select",
+        "options": [
+          "не начисляются",
+          "снимаются"
+        ],
+        "value": "не начисляются"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру \"Своя игра\".\nКоличество категорий: {categories}.\nВопросов в категории: {questions}.\nЦены вопросов: {prices}.\nБаллы при ошибке: {scoreMode}.\nСам придумай категории, вопросы и ответы по теме и классу.\nМеханика: на стартовом экране табло с категориями и ценами. Ученик выбирает ячейку, открывается вопрос. При верном ответе начисляются баллы, при неверном — по выбранному правилу. Ячейка после ответа блокируется. Когда все ячейки использованы — финал."
+  },
+  {
+    "id": "m30",
+    "num": 30,
+    "category": "Механики случайности",
+    "title": "Маршрут — бродилка со случайным ходом",
+    "short": "Игрок бросает кубик и идёт по маршруту, на клетках выполняет задания.",
+    "what": "игровое поле, случайный ход, задания на клетках, специальные клетки",
+    "fields": [
+      {
+        "key": "cells",
+        "label": "Количество клеток",
+        "type": "number",
+        "value": "15"
+      },
+      {
+        "key": "players",
+        "label": "Количество игроков",
+        "type": "select",
+        "options": [
+          "1",
+          "2"
+        ],
+        "value": "1"
+      },
+      {
+        "key": "special",
+        "label": "Специальные клетки",
+        "type": "select",
+        "options": [
+          "да — бонус и штраф",
+          "нет"
+        ],
+        "value": "да — бонус и штраф"
+      },
+      {
+        "key": "move",
+        "label": "Случайный ход",
+        "type": "select",
+        "options": [
+          "кубик 1–6",
+          "карточки ходов 1–3",
+          "спиннер"
+        ],
+        "value": "кубик 1–6"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру-бродилку со случайным ходом.\nКоличество клеток: {cells}.\nКоличество игроков: {players}.\nСпециальные клетки: {special}.\nСлучайный ход: {move}.\nСам придумай короткие задания для клеток по теме и классу.\nМеханика: игрок нажимает кнопку случайного хода, персонаж двигается по клеткам. На клетке открывается задание. Верно — ход засчитывается, неверно — действует выбранное правило ошибки. Специальные клетки срабатывают автоматически. Финиш — победа."
+  },
+  {
+    "id": "m31",
+    "num": 31,
+    "category": "Механики порядка",
+    "title": "Бродилка по шагам",
+    "short": "Игровое поле с клетками, на каждой клетке — задание.",
+    "what": "клетки идут по порядку, ответил верно — двигаешься вперёд, неверно — остаёшься",
+    "fields": [
+      {
+        "key": "cells",
+        "label": "Количество клеток",
+        "type": "number",
+        "value": "12"
+      },
+      {
+        "key": "special",
+        "label": "Специальные клетки",
+        "type": "select",
+        "options": [
+          "да — +2 хода / штраф -1",
+          "нет"
+        ],
+        "value": "нет"
+      },
+      {
+        "key": "character",
+        "label": "Персонаж",
+        "type": "text",
+        "value": "котик"
+      },
+      {
+        "key": "fieldTheme",
+        "label": "Тема поля",
+        "type": "text",
+        "value": "лесная тропинка"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру-бродилку по шагам.\nКоличество клеток: {cells}.\nСпециальные клетки: {special}.\nПерсонаж: {character}.\nТема поля: {fieldTheme}.\nСам придумай задания для клеток — одно короткое задание на клетку — по теме и классу.\nМеханика: ученик нажимает \"Вперёд\", получает задание с клетки и отвечает. Верный ответ двигает персонажа вперёд. Неверный ответ оставляет на месте и показывает правильный ответ. Специальные клетки срабатывают автоматически. Финиш — победа."
+  },
+  {
+    "id": "m32",
+    "num": 32,
+    "category": "Механики случайности",
+    "title": "Квест случайный — с ветвлением",
+    "short": "Каждый выбор ведёт к разным ситуациям и разным финалам.",
+    "what": "дерево решений, выбор вариантов, последствия, несколько финалов",
+    "fields": [
+      {
+        "key": "situations",
+        "label": "Количество ситуаций",
+        "type": "number",
+        "value": "6"
+      },
+      {
+        "key": "choices",
+        "label": "Вариантов выбора",
+        "type": "number",
+        "value": "2"
+      },
+      {
+        "key": "endings",
+        "label": "Финалы",
+        "type": "select",
+        "options": [
+          "хороший и плохой",
+          "три варианта",
+          "несколько тематических финалов"
+        ],
+        "value": "хороший и плохой"
+      },
+      {
+        "key": "character",
+        "label": "Персонаж",
+        "type": "text",
+        "value": "школьник Артём"
+      }
+    ],
+    "prompt": "Создай интерактивную HTML-игру — квест с выбором пути и ветвлением.\nКоличество ситуаций: {situations}.\nВариантов выбора: {choices}.\nФиналы: {endings}.\nПерсонаж: {character}.\nСам придумай ситуации по теме и классу. Сначала нарисуй дерево решений: ситуация 1 → выбор А → ситуация 2, выбор Б → ситуация 3 и так далее.\nМеханика: на экране ситуация и варианты выбора. Каждый выбор показывает последствие и переводит в следующую ситуацию. Плохой финал объясняет, что пошло не так. Финал показывает итог и кнопку \"Пройти снова\"."
+  }
+];
+      const FEEDBACK = [
+  {
+    "id": "fb_animation",
+    "title": "Анимация, звук, GIF",
+    "short": "Быстрый визуальный или звуковой сигнал после ответа.",
+    "mechanics": "all",
+    "exclude": [
+      "m22"
+    ],
+    "fields": [
+      {
+        "key": "correct",
+        "label": "При верном ответе",
+        "type": "select",
+        "options": [
+          "конфетти",
+          "подпрыгивание кнопки",
+          "вспышка зелёным",
+          "персонаж радуется"
+        ],
+        "value": "конфетти"
+      },
+      {
+        "key": "wrong",
+        "label": "При неверном ответе",
+        "type": "select",
+        "options": [
+          "покачивание",
+          "мигание красным",
+          "мягкая вибрация элемента",
+          "персонаж подбадривает"
+        ],
+        "value": "покачивание"
+      },
+      {
+        "key": "sound",
+        "label": "Звук",
+        "type": "select",
+        "options": [
+          "без звука",
+          "звук с кнопкой вкл/выкл"
+        ],
+        "value": "без звука"
+      }
+    ],
+    "prompt": "Добавь анимированную обратную связь. При верном ответе: {correct}. При неверном ответе: {wrong}. Звук: {sound}. Анимация длится не более 1 секунды и не блокирует продолжение игры."
+  },
+  {
+    "id": "fb_highlight",
+    "title": "Выделение ответов",
+    "short": "Цвет, рамка, подчёркивание или подсветка выбранного элемента.",
+    "mechanics": "all",
+    "exclude": [
+      "m26"
+    ],
+    "fields": [
+      {
+        "key": "correct",
+        "label": "Верный ответ",
+        "type": "select",
+        "options": [
+          "зелёная рамка",
+          "зелёный фон",
+          "галочка рядом",
+          "подчёркивание зелёным"
+        ],
+        "value": "зелёная рамка"
+      },
+      {
+        "key": "wrong",
+        "label": "Неверный ответ",
+        "type": "select",
+        "options": [
+          "красная рамка",
+          "красный фон",
+          "крестик рядом",
+          "покачивание"
+        ],
+        "value": "красная рамка"
+      },
+      {
+        "key": "afterError",
+        "label": "После ошибки",
+        "type": "select",
+        "options": [
+          "показать верный ответ с подсветкой",
+          "не показывать — пусть попробует снова",
+          "показать после исчерпания попыток"
+        ],
+        "value": "показать верный ответ с подсветкой"
+      }
+    ],
+    "prompt": "Добавь визуальное выделение ответов. Верный ответ: {correct}. Неверный ответ: {wrong}. После ошибки: {afterError}. Не используй только цвет как единственный сигнал — добавь текст или знак."
+  },
+  {
+    "id": "fb_text",
+    "title": "Текстовые пояснения",
+    "short": "Короткое объяснение, почему ответ верный или неверный.",
+    "mechanics": "all",
+    "exclude": [
+      "m22",
+      "m26"
+    ],
+    "fields": [
+      {
+        "key": "tone",
+        "label": "Тон сообщений",
+        "type": "select",
+        "options": [
+          "нейтральный",
+          "ободряющий",
+          "игровой с персонажем"
+        ],
+        "value": "ободряющий"
+      },
+      {
+        "key": "show",
+        "label": "Когда показывать",
+        "type": "select",
+        "options": [
+          "сразу",
+          "после кнопки \"Узнать почему\""
+        ],
+        "value": "сразу"
+      },
+      {
+        "key": "length",
+        "label": "Длина пояснения",
+        "type": "select",
+        "options": [
+          "1 предложение",
+          "1–2 предложения"
+        ],
+        "value": "1–2 предложения"
+      }
+    ],
+    "prompt": "Добавь текстовые пояснения к ответам. Тон сообщений: {tone}. Показывай пояснение: {show}. Длина пояснения: {length}. При верном ответе дай короткое поощрение и объясни, почему ответ верный. При неверном ответе поддержи ученика, объясни ошибку и при необходимости покажи правильный ответ."
+  },
+  {
+    "id": "fb_signal",
+    "title": "Сигнал верно / неверно",
+    "short": "Однозначный текстовый сигнал результата действия.",
+    "mechanics": "all",
+    "exclude": [
+      "m22",
+      "m26"
+    ],
+    "fields": [
+      {
+        "key": "correctText",
+        "label": "Текст при верном ответе",
+        "type": "text",
+        "value": "Отлично!"
+      },
+      {
+        "key": "wrongText",
+        "label": "Текст при неверном ответе",
+        "type": "text",
+        "value": "Почти! Попробуй ещё раз."
+      },
+      {
+        "key": "timing",
+        "label": "Когда появляется",
+        "type": "select",
+        "options": [
+          "сразу при выборе",
+          "после нажатия кнопки \"Проверить\""
+        ],
+        "value": "сразу при выборе"
+      }
+    ],
+    "prompt": "Добавь чёткий визуальный сигнал верного и неверного ответа. Верно: текст \"{correctText}\" и понятная отметка. Неверно: текст \"{wrongText}\" и понятная отметка. Сигнал появляется: {timing}."
+  },
+  {
+    "id": "fb_character",
+    "title": "Персонаж-помощник",
+    "short": "Персонаж реагирует на успех, ошибку, подсказку и финал.",
+    "mechanics": "all",
+    "exclude": [],
+    "fields": [
+      {
+        "key": "character",
+        "label": "Персонаж",
+        "type": "text",
+        "value": "кот-учёный"
+      },
+      {
+        "key": "style",
+        "label": "Стиль персонажа",
+        "type": "select",
+        "options": [
+          "мультяшный",
+          "пиксельный",
+          "минималистичный",
+          "как простая CSS/SVG-иконка"
+        ],
+        "value": "мультяшный"
+      },
+      {
+        "key": "replies",
+        "label": "Количество разных реплик",
+        "type": "select",
+        "options": [
+          "по 2 реплики",
+          "по 3–4 реплики"
+        ],
+        "value": "по 3–4 реплики"
+      }
+    ],
+    "prompt": "Добавь персонажа-помощника. Персонаж: {character}. Стиль: {style}. Реплики: {replies} на каждую ситуацию — верный ответ, неверный ответ, подсказка, финал. Персонаж при ошибке должен поддерживать, а не ругать."
+  },
+  {
+    "id": "fb_score",
+    "title": "Баллы и оценка",
+    "short": "Подсчёт очков по ходу игры или в финале.",
+    "mechanics": "all",
+    "exclude": [
+      "m22",
+      "m26"
+    ],
+    "fields": [
+      {
+        "key": "system",
+        "label": "Система баллов",
+        "type": "select",
+        "options": [
+          "1 балл за верный ответ",
+          "2 балла за ответ без подсказки",
+          "баллы за скорость",
+          "штраф за ошибку"
+        ],
+        "value": "1 балл за верный ответ"
+      },
+      {
+        "key": "display",
+        "label": "Показывать баллы",
+        "type": "select",
+        "options": [
+          "сразу — счётчик вверху",
+          "только в финале"
+        ],
+        "value": "сразу — счётчик вверху"
+      },
+      {
+        "key": "assessment",
+        "label": "Оценка в финале",
+        "type": "select",
+        "options": [
+          "5-балльная",
+          "звёзды 1–3",
+          "процент",
+          "уровень: Новичок / Знаток / Мастер"
+        ],
+        "value": "звёзды 1–3"
+      }
+    ],
+    "prompt": "Добавь систему подсчёта баллов. Баллы начисляются: {system}. Показывать баллы: {display}. Оценка в финале: {assessment}. В финале покажи количество верных ответов, ошибок и общий результат."
+  },
+  {
+    "id": "fb_final",
+    "title": "Финальный экран",
+    "short": "Итог, поздравление, результат и кнопки после завершения игры.",
+    "mechanics": "all",
+    "exclude": [],
+    "fields": [
+      {
+        "key": "title",
+        "label": "Заголовок финала",
+        "type": "text",
+        "value": "Миссия выполнена!"
+      },
+      {
+        "key": "show",
+        "label": "Что показать",
+        "type": "select",
+        "options": [
+          "баллы + количество верных",
+          "баллы + оценка + ошибки",
+          "звёзды + сколько не хватило до следующей"
+        ],
+        "value": "баллы + количество верных"
+      },
+      {
+        "key": "buttons",
+        "label": "Кнопки",
+        "type": "select",
+        "options": [
+          "Играть снова",
+          "Играть снова + посмотреть ошибки",
+          "Играть снова + поделиться результатом"
+        ],
+        "value": "Играть снова + посмотреть ошибки"
+      }
+    ],
+    "prompt": "Добавь финальный экран. Заголовок: \"{title}\". Показать: {show}. Кнопки: {buttons}. Финал должен быть поддерживающим даже при низком результате."
+  },
+  {
+    "id": "fb_retry",
+    "title": "Ещё раз / Очистить",
+    "short": "Сброс ответа или повтор задания без перезапуска всей игры.",
+    "mechanics": [
+      "m5",
+      "m6",
+      "m15",
+      "m17",
+      "m18",
+      "m20",
+      "m28"
+    ],
+    "exclude": [],
+    "fields": [
+      {
+        "key": "clear",
+        "label": "Кнопка \"Очистить\"",
+        "type": "select",
+        "options": [
+          "сбрасывает только поле ввода",
+          "возвращает в начало задания"
+        ],
+        "value": "сбрасывает только поле ввода"
+      },
+      {
+        "key": "retry",
+        "label": "Кнопка \"Ещё раз\" появляется",
+        "type": "select",
+        "options": [
+          "сразу после ошибки",
+          "после исчерпания попыток"
+        ],
+        "value": "после исчерпания попыток"
+      },
+      {
+        "key": "points",
+        "label": "Баллы при повторе",
+        "type": "select",
+        "options": [
+          "сохраняются",
+          "не начисляются за повторный верный ответ"
+        ],
+        "value": "не начисляются за повторный верный ответ"
+      }
+    ],
+    "prompt": "Добавь кнопки управления попыткой. Кнопка \"Очистить\": {clear}. Кнопка \"Ещё раз\" появляется: {retry}. Баллы при повторе: {points}."
+  },
+  {
+    "id": "fb_next",
+    "title": "Кнопка перехода \"Дальше\"",
+    "short": "Управляет темпом перехода между заданиями.",
+    "mechanics": "all",
+    "exclude": [
+      "m22",
+      "m26",
+      "m27"
+    ],
+    "fields": [
+      {
+        "key": "appear",
+        "label": "Когда появляется",
+        "type": "select",
+        "options": [
+          "сразу после ответа",
+          "через 1–2 секунды",
+          "после прочтения пояснения"
+        ],
+        "value": "после прочтения пояснения"
+      },
+      {
+        "key": "behavior",
+        "label": "Поведение",
+        "type": "select",
+        "options": [
+          "ученик нажимает сам",
+          "автопереход через 2 секунды",
+          "автопереход через 3 секунды с обратным отсчётом"
+        ],
+        "value": "ученик нажимает сам"
+      },
+      {
+        "key": "text",
+        "label": "Текст кнопки",
+        "type": "text",
+        "value": "Дальше"
+      }
+    ],
+    "prompt": "Добавь управление переходом между заданиями. Кнопка \"{text}\" появляется: {appear}. Поведение: {behavior}. Не давай ученику пропустить задание до ответа."
+  },
+  {
+    "id": "fb_block",
+    "title": "Блокировка прогресса",
+    "short": "Следующий шаг недоступен, пока ученик не выполнит условие.",
+    "mechanics": [
+      "m1",
+      "m2",
+      "m3",
+      "m5",
+      "m6",
+      "m11",
+      "m17",
+      "m18",
+      "m20",
+      "m21",
+      "m24",
+      "m25",
+      "m30",
+      "m31",
+      "m32"
+    ],
+    "exclude": [],
+    "fields": [
+      {
+        "key": "target",
+        "label": "Что заблокировано",
+        "type": "select",
+        "options": [
+          "кнопка \"Дальше\"",
+          "следующий этап",
+          "следующий уровень",
+          "финальный экран"
+        ],
+        "value": "кнопка \"Дальше\""
+      },
+      {
+        "key": "condition",
+        "label": "Условие разблокировки",
+        "type": "select",
+        "options": [
+          "любой ответ",
+          "только верный ответ",
+          "ответ + прочтение пояснения"
+        ],
+        "value": "любой ответ"
+      },
+      {
+        "key": "visual",
+        "label": "Визуал блокировки",
+        "type": "select",
+        "options": [
+          "серая кнопка",
+          "замок",
+          "надпись \"Сначала ответьте\""
+        ],
+        "value": "серая кнопка"
+      },
+      {
+        "key": "message",
+        "label": "Подсказка при попытке нажать",
+        "type": "text",
+        "value": "Сначала выполните задание"
+      }
+    ],
+    "prompt": "Добавь блокировку прогресса до выполнения условия. Что заблокировано: {target}. Условие разблокировки: {condition}. Визуал заблокированного состояния: {visual}. При попытке нажать заблокированное показывай подсказку: \"{message}\"."
+  },
+  {
+    "id": "fb_progress",
+    "title": "Индикатор прогресса",
+    "short": "Полоса, счётчик или точки, показывающие путь до финала.",
+    "mechanics": "all",
+    "exclude": [
+      "m22",
+      "m26",
+      "m27"
+    ],
+    "fields": [
+      {
+        "key": "format",
+        "label": "Формат",
+        "type": "select",
+        "options": [
+          "полоса прогресса",
+          "счётчик \"задание X из Y\"",
+          "точки-шаги",
+          "комбинация: полоса + счётчик"
+        ],
+        "value": "комбинация: полоса + счётчик"
+      },
+      {
+        "key": "counting",
+        "label": "Что отсчитывается",
+        "type": "select",
+        "options": [
+          "все задания",
+          "только верные ответы",
+          "этапы квеста"
+        ],
+        "value": "все задания"
+      },
+      {
+        "key": "animation",
+        "label": "Анимация",
+        "type": "select",
+        "options": [
+          "плавное заполнение",
+          "анимированный счётчик",
+          "без анимации"
+        ],
+        "value": "плавное заполнение"
+      },
+      {
+        "key": "percent",
+        "label": "Показывать процент",
+        "type": "select",
+        "options": [
+          "да",
+          "нет"
+        ],
+        "value": "нет"
+      }
+    ],
+    "prompt": "Добавь индикатор прогресса. Формат: {format}. Что отсчитывается: {counting}. Анимация: {animation}. Показывать процент: {percent}. Расположение — вверху игрового экрана."
+  },
+  {
+    "id": "fb_counter",
+    "title": "Выполнено / осталось",
+    "short": "Точный счётчик выполненных и оставшихся заданий.",
+    "mechanics": "all",
+    "exclude": [
+      "m22",
+      "m26",
+      "m27"
+    ],
+    "fields": [
+      {
+        "key": "format",
+        "label": "Формат счётчика",
+        "type": "select",
+        "options": [
+          "Задание X из Y",
+          "Выполнено: X | Осталось: Y",
+          "визуальные точки"
+        ],
+        "value": "Выполнено: X | Осталось: Y"
+      },
+      {
+        "key": "count",
+        "label": "Что считать",
+        "type": "select",
+        "options": [
+          "все задания подряд",
+          "только правильно выполненные",
+          "попытки"
+        ],
+        "value": "все задания подряд"
+      },
+      {
+        "key": "update",
+        "label": "Когда обновляется",
+        "type": "select",
+        "options": [
+          "сразу после ответа",
+          "при переходе к следующему заданию"
+        ],
+        "value": "при переходе к следующему заданию"
+      }
+    ],
+    "prompt": "Добавь счётчик заданий. Формат: {format}. Считать: {count}. Обновляется: {update}. Размести счётчик в верхней панели рядом с прогрессом."
+  }
+];
+      const ENGAGEMENT = [
+  {
+    "id": "eng_timer",
+    "title": "Таймер",
+    "short": "Ограничивает время на задание.",
+    "mechanics": [
+      "m1",
+      "m3",
+      "m26",
+      "m28"
+    ],
+    "fields": [
+      {
+        "key": "seconds",
+        "label": "Секунд на задание",
+        "type": "number",
+        "value": "30"
+      },
+      {
+        "key": "timeout",
+        "label": "При истечении времени",
+        "type": "select",
+        "options": [
+          "показать правильный ответ и перейти дальше",
+          "засчитать ошибку и перейти дальше",
+          "остановить игру"
+        ],
+        "value": "показать правильный ответ и перейти дальше"
+      }
+    ],
+    "prompt": "Добавь таймер обратного отсчёта {seconds} секунд на каждое задание. При истечении времени: {timeout}. В финале покажи, сколько заданий ученик успел выполнить за отведённое время."
+  },
+  {
+    "id": "eng_lives",
+    "title": "Попытки / жизни",
+    "short": "Сердечки или жизни уменьшаются после ошибок.",
+    "mechanics": [
+      "m11",
+      "m21",
+      "m30",
+      "m31",
+      "m32"
+    ],
+    "fields": [
+      {
+        "key": "lives",
+        "label": "Количество жизней",
+        "type": "number",
+        "value": "3"
+      },
+      {
+        "key": "afterZero",
+        "label": "Если жизни закончились",
+        "type": "select",
+        "options": [
+          "экран \"Игра окончена\"",
+          "дать одну дополнительную попытку",
+          "показать финал с результатом"
+        ],
+        "value": "экран \"Игра окончена\""
+      }
+    ],
+    "prompt": "Добавь систему жизней: {lives} жизни вверху экрана. При каждой ошибке одна жизнь исчезает с анимацией. Если жизни закончились: {afterZero}. В финале покажи, сколько жизней осталось."
+  },
+  {
+    "id": "eng_levels",
+    "title": "Уровни",
+    "short": "Лёгкий, средний и сложный уровень с разблокировкой.",
+    "mechanics": [
+      "m1",
+      "m12",
+      "m13",
+      "m14",
+      "m15",
+      "m16",
+      "m17",
+      "m18",
+      "m19",
+      "m20",
+      "m32"
+    ],
+    "fields": [
+      {
+        "key": "levels",
+        "label": "Количество уровней",
+        "type": "number",
+        "value": "3"
+      },
+      {
+        "key": "threshold",
+        "label": "Порог открытия следующего",
+        "type": "text",
+        "value": "70%"
+      },
+      {
+        "key": "map",
+        "label": "Карта уровней",
+        "type": "select",
+        "options": [
+          "с замками и звёздами",
+          "простая линейная",
+          "как маршрут"
+        ],
+        "value": "с замками и звёздами"
+      }
+    ],
+    "prompt": "Разбей игру на {levels} уровня: лёгкий, средний, сложный. Следующий уровень открывается после результата от {threshold}. Показывай карту уровней: {map}. Уровень 1 сделай очень лёгким, чтобы ученик начал с успеха."
+  },
+  {
+    "id": "eng_progress",
+    "title": "Прогресс",
+    "short": "Анимированная полоса удерживает движение к финалу.",
+    "mechanics": "all",
+    "exclude": [
+      "m22"
+    ],
+    "fields": [
+      {
+        "key": "total",
+        "label": "Ориентир количества заданий",
+        "type": "number",
+        "value": "10"
+      },
+      {
+        "key": "basis",
+        "label": "Заполняется после",
+        "type": "select",
+        "options": [
+          "каждого верного ответа",
+          "каждого выполненного задания",
+          "каждого этапа"
+        ],
+        "value": "каждого верного ответа"
+      }
+    ],
+    "prompt": "Добавь анимированную полосу прогресса вверху экрана. Она плавно заполняется после {basis}. Рядом покажи счётчик \"задание X из {total}\". Когда полоса заполнена на 100%, покажи короткую анимацию перед финальным экраном."
+  },
+  {
+    "id": "eng_rewards",
+    "title": "Награды",
+    "short": "Звёзды, медаль, значок или грамота в финале.",
+    "mechanics": [
+      "m1",
+      "m11",
+      "m21",
+      "m29",
+      "m30",
+      "m31",
+      "m32"
+    ],
+    "fields": [
+      {
+        "key": "format",
+        "label": "Формат награды",
+        "type": "select",
+        "options": [
+          "звёзды 1–3",
+          "медаль",
+          "значок",
+          "грамота"
+        ],
+        "value": "звёзды 1–3"
+      },
+      {
+        "key": "thresholds",
+        "label": "Пороги",
+        "type": "text",
+        "value": "1 звезда — от 50%, 2 звезды — от 75%, 3 звезды — 100%"
+      }
+    ],
+    "prompt": "Добавь систему наград. Формат: {format}. Пороги: {thresholds}. В финале покажи, сколько правильных ответов не хватило до следующей награды, и добавь кнопку \"Пройти снова\"."
+  },
+  {
+    "id": "eng_artifacts",
+    "title": "Артефакты",
+    "short": "Игрок собирает предметы за успешные действия.",
+    "mechanics": [
+      "m11",
+      "m19",
+      "m21",
+      "m23",
+      "m24",
+      "m25",
+      "m30",
+      "m31",
+      "m32"
+    ],
+    "fields": [
+      {
+        "key": "items",
+        "label": "Что собираем",
+        "type": "select",
+        "options": [
+          "ключи",
+          "монеты",
+          "фрагменты карты",
+          "кристаллы",
+          "тематические предметы урока"
+        ],
+        "value": "фрагменты карты"
+      },
+      {
+        "key": "final",
+        "label": "Итоговый артефакт",
+        "type": "select",
+        "options": [
+          "сундук",
+          "карта",
+          "диплом",
+          "секретное послание"
+        ],
+        "value": "карта"
+      }
+    ],
+    "prompt": "Добавь инвентарь в правом углу экрана. За каждый верный ответ появляется новый предмет: {items}. Предметы накапливаются и отображаются иконками или карточками. В финале все собранные предметы подсвечиваются и открывают итоговый артефакт: {final}."
+  },
+  {
+    "id": "eng_route",
+    "title": "Маршрут",
+    "short": "Карта с точками, текущей позицией и движением персонажа.",
+    "mechanics": [
+      "m19",
+      "m21",
+      "m30",
+      "m31",
+      "m32"
+    ],
+    "fields": [
+      {
+        "key": "points",
+        "label": "Количество точек",
+        "type": "number",
+        "value": "5"
+      },
+      {
+        "key": "mapType",
+        "label": "Вариант карты",
+        "type": "select",
+        "options": [
+          "линейный путь",
+          "карта мира",
+          "планеты",
+          "лесная тропа",
+          "тематическая карта по уроку"
+        ],
+        "value": "тематическая карта по уроку"
+      }
+    ],
+    "prompt": "Добавь карту маршрута с {points} точками. Вариант карты: {mapType}. Текущая точка подсвечена, пройденные отмечены, следующие серые. После каждого этапа персонаж анимированно перемещается на следующую точку. На финальной точке — особая анимация победы."
+  },
+  {
+    "id": "eng_collection",
+    "title": "Коллекция",
+    "short": "Сетка закрытых ячеек, которые открываются по мере прохождения.",
+    "mechanics": [
+      "m21",
+      "m29",
+      "m30",
+      "m31",
+      "m32"
+    ],
+    "fields": [
+      {
+        "key": "cells",
+        "label": "Количество ячеек",
+        "type": "number",
+        "value": "8"
+      },
+      {
+        "key": "content",
+        "label": "Что открывается",
+        "type": "select",
+        "options": [
+          "значки тем",
+          "карточки слов",
+          "формулы",
+          "символы",
+          "фото/иконки мест"
+        ],
+        "value": "значки тем"
+      }
+    ],
+    "prompt": "Добавь раздел \"Моя коллекция\" — сетку из {cells} ячеек. Каждая ячейка сначала закрыта силуэтом. За прохождение задания открывается одна ячейка и показывает: {content}. Когда вся коллекция собрана — финальное поздравление с полной коллекцией."
+  }
+];
+
+      const root = document.getElementById('prompt-constructor-iy');
+      const mechanicsEl = root.querySelector('#iy-mechanics');
+      const categoriesEl = root.querySelector('#iy-categories');
+      const searchEl = root.querySelector('#iy-search');
+      const basicFieldsEl = root.querySelector('#iy-basic-fields');
+      const mechanicFieldsEl = root.querySelector('#iy-mechanic-fields');
+      const visualFieldsEl = root.querySelector('#iy-visual-fields');
+      const feedbackListEl = root.querySelector('#iy-feedback-list');
+      const engagementListEl = root.querySelector('#iy-engagement-list');
+      const extraEl = root.querySelector('#iy-extra');
+      const outputEl = root.querySelector('#iy-output');
+      const statusEl = root.querySelector('#iy-status');
+      const generateBtn = root.querySelector('#iy-generate');
+      const copyBtn = root.querySelector('#iy-copy');
+      const clearBtn = root.querySelector('#iy-clear');
+
+      let selectedMechanicId = MECHANICS[0].id;
+      let activeCategory = 'Все';
+
+      const commonFields = [
+        { key: 'subject', label: 'Предмет', type: 'text', value: 'математика' },
+        { key: 'grade', label: 'Класс / возраст', type: 'text', value: '5 класс' },
+        { key: 'topic', label: 'Тема', type: 'text', value: 'выбери тему сам' },
+        { key: 'language', label: 'Язык материала', type: 'select', options: ['русский', 'английский', 'русский + английский'], value: 'русский' },
+        { key: 'format', label: 'Формат результата', type: 'select', options: ['один готовый HTML-файл со встроенным CSS и JavaScript', 'HTML-блок для вставки на сайт'], value: 'один готовый HTML-файл со встроенным CSS и JavaScript' }
+      ];
+
+      const visualFields = [
+        { key: 'style', label: 'Стиль игры', type: 'text', value: 'введите стиль, например: пиратский корабль / лаборатория / рисованный вязаный / карта сокровищ' },
+        { key: 'visualAdaptation', label: 'Адаптация оформления', type: 'select', options: ['сильно адаптировать оформление под выбранный стиль', 'умеренно адаптировать оформление', 'минимально адаптировать оформление'], value: 'сильно адаптировать оформление под выбранный стиль' },
+        { key: 'paletteMode', label: 'Палитра игры', type: 'select', options: ['подобрать автоматически под стиль', 'использовать мои цвета из поля ниже', 'пастельная', 'яркая детская', 'тёмная неоновая', 'природная', 'книжная', 'ретро', 'минималистичная'], value: 'подобрать автоматически под стиль' },
+        { key: 'customPalette', label: 'Мои цвета для самой игры', type: 'text', value: '' },
+        { key: 'backgroundType', label: 'Фон игры', type: 'select', options: ['тематический фон', 'градиент под стиль', 'бумага / тетрадь / пергамент', 'сцена с декоративными элементами', 'однотонный спокойный фон'], value: 'тематический фон' },
+        { key: 'cardStyle', label: 'Карточки и кнопки', type: 'select', options: ['карточки с тенью', 'бумажные стикеры', 'деревянные таблички', 'неоновые панели', 'вязаные мягкие плашки', 'школьные листочки', 'игровые плитки', 'подобрать под стиль'], value: 'подобрать под стиль' },
+        { key: 'decor', label: 'Декор по теме', type: 'text', value: 'подобрать самостоятельно под стиль и тему урока' },
+        { key: 'avoidConstructorColors', label: 'Цвета конструктора', type: 'select', options: ['не использовать цвета конструктора в самой игре', 'можно использовать цвета конструктора, если они подходят стилю'], value: 'не использовать цвета конструктора в самой игре' }
+      ];
+
+      function selectedMechanic(){
+        return MECHANICS.find(item => item.id === selectedMechanicId) || MECHANICS[0];
+      }
+
+      function escapeHtml(value){
+        return String(value)
+          .replaceAll('&','&amp;')
+          .replaceAll('<','&lt;')
+          .replaceAll('>','&gt;')
+          .replaceAll('"','&quot;')
+          .replaceAll("'",'&#039;');
+      }
+
+      function normalize(value){
+        return String(value || '').toLowerCase().trim();
+      }
+
+      function itemFits(item, mechanicId){
+        if (item.mechanics === 'all') {
+          return !(item.exclude || []).includes(mechanicId);
+        }
+        return Array.isArray(item.mechanics) && item.mechanics.includes(mechanicId) && !(item.exclude || []).includes(mechanicId);
+      }
+
+      function inputId(scope, itemId, key){
+        return `iy-${scope}-${itemId}-${key}`;
+      }
+
+      function fieldValue(scope, itemId, key){
+        const el = root.querySelector(`#${CSS.escape(inputId(scope, itemId, key))}`);
+        return el ? el.value.trim() : '';
+      }
+
+      function simpleFieldId(key){
+        return `iy-field-${key}`;
+      }
+
+      function simpleValue(key){
+        const el = root.querySelector(`#${CSS.escape(simpleFieldId(key))}`);
+        return el ? el.value.trim() : '';
+      }
+
+      function mechanicValue(key){
+        const el = root.querySelector(`#${CSS.escape(inputId('mechanic', selectedMechanicId, key))}`);
+        return el ? el.value.trim() : '';
+      }
+
+      function renderCategories(){
+        const categories = ['Все', ...Array.from(new Set(MECHANICS.map(item => item.category)))];
+        categoriesEl.innerHTML = categories.map(cat => `<button class="iy-chip ${cat === activeCategory ? 'is-active' : ''}" type="button" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('');
+      }
+
+      function renderMechanics(){
+        const query = normalize(searchEl.value);
+        const filtered = MECHANICS.filter(item => {
+          const byCategory = activeCategory === 'Все' || item.category === activeCategory;
+          const bySearch = !query || normalize(`${item.title} ${item.short} ${item.category}`).includes(query);
+          return byCategory && bySearch;
+        });
+        mechanicsEl.innerHTML = filtered.map(item => `
+          <article class="iy-card ${item.id === selectedMechanicId ? 'is-selected' : ''}" data-mechanic="${item.id}" tabindex="0" role="button" aria-pressed="${item.id === selectedMechanicId ? 'true' : 'false'}">
+            <span class="iy-card-number">${item.num}</span>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.short)}</p>
+            <span class="iy-meta">${escapeHtml(item.category)}</span>
+          </article>
+        `).join('') || `<div class="iy-empty">По этому запросу механика не найдена.</div>`;
+      }
+
+      function renderField(field, id, scope){
+        const baseId = (scope === 'basic' || scope === 'visual') ? simpleFieldId(field.key) : inputId(scope, selectedMechanicId, field.key);
+        const value = field.value || '';
+        let control = '';
+        if (field.type === 'select') {
+          control = `<select id="${escapeHtml(baseId)}">${(field.options || []).map(option => `<option value="${escapeHtml(option)}" ${option === value ? 'selected' : ''}>${escapeHtml(option)}</option>`).join('')}</select>`;
+        } else if (field.type === 'number') {
+          control = `<input id="${escapeHtml(baseId)}" type="number" min="1" value="${escapeHtml(value)}" />`;
+        } else {
+          control = `<input id="${escapeHtml(baseId)}" type="text" value="${escapeHtml(value)}" />`;
+        }
+        return `<div class="iy-field"><label for="${escapeHtml(baseId)}">${escapeHtml(field.label)}</label>${control}</div>`;
+      }
+
+      function renderBasic(){
+        basicFieldsEl.innerHTML = commonFields.map(field => renderField(field, field.key, 'basic')).join('');
+        const mech = selectedMechanic();
+        mechanicFieldsEl.innerHTML = mech.fields.map(field => {
+          const baseId = inputId('mechanic', mech.id, field.key);
+          let control = '';
+          if (field.type === 'select') {
+            control = `<select id="${escapeHtml(baseId)}">${(field.options || []).map(option => `<option value="${escapeHtml(option)}" ${option === field.value ? 'selected' : ''}>${escapeHtml(option)}</option>`).join('')}</select>`;
+          } else if (field.type === 'number') {
+            control = `<input id="${escapeHtml(baseId)}" type="number" min="1" value="${escapeHtml(field.value || '')}" />`;
+          } else {
+            control = `<input id="${escapeHtml(baseId)}" type="text" value="${escapeHtml(field.value || '')}" />`;
+          }
+          return `<div class="iy-field"><label for="${escapeHtml(baseId)}">${escapeHtml(field.label)}</label>${control}</div>`;
+        }).join('');
+      }
+
+      function renderVisual(){
+        visualFieldsEl.innerHTML = visualFields.map(field => renderField(field, field.key, 'visual')).join('');
+      }
+
+      function renderOptionItem(item, scope){
+        const checkId = `iy-check-${scope}-${item.id}`;
+        const fields = (item.fields || []).map(field => {
+          const id = inputId(scope, item.id, field.key);
+          let control = '';
+          if (field.type === 'select') {
+            control = `<select id="${escapeHtml(id)}">${(field.options || []).map(option => `<option value="${escapeHtml(option)}" ${option === field.value ? 'selected' : ''}>${escapeHtml(option)}</option>`).join('')}</select>`;
+          } else if (field.type === 'number') {
+            control = `<input id="${escapeHtml(id)}" type="number" min="1" value="${escapeHtml(field.value || '')}" />`;
+          } else {
+            control = `<input id="${escapeHtml(id)}" type="text" value="${escapeHtml(field.value || '')}" />`;
+          }
+          return `<div class="iy-field"><label for="${escapeHtml(id)}">${escapeHtml(field.label)}</label>${control}</div>`;
+        }).join('');
+
+        return `
+          <div class="iy-option" data-option="${escapeHtml(item.id)}" data-scope="${escapeHtml(scope)}">
+            <label class="iy-option-head" for="${escapeHtml(checkId)}">
+              <input type="checkbox" id="${escapeHtml(checkId)}" data-check="${escapeHtml(item.id)}" />
+              <span>
+                <span class="iy-option-title">${escapeHtml(item.title)}</span>
+                <span class="iy-option-desc">${escapeHtml(item.short)}</span>
+              </span>
+            </label>
+            <div class="iy-option-fields">${fields}</div>
+          </div>
+        `;
+      }
+
+      function renderOptions(){
+        const feedback = FEEDBACK.filter(item => itemFits(item, selectedMechanicId));
+        const engagement = ENGAGEMENT.filter(item => itemFits(item, selectedMechanicId));
+        feedbackListEl.innerHTML = feedback.length
+          ? feedback.map(item => renderOptionItem(item, 'feedback')).join('')
+          : '<div class="iy-empty">Для этой механики нет специальных блоков обратной связи. Можно продолжить без них.</div>';
+        engagementListEl.innerHTML = engagement.length
+          ? engagement.map(item => renderOptionItem(item, 'engagement')).join('')
+          : '<div class="iy-empty">Для этой механики дополнительные механики вовлечения не обязательны. Можно продолжить без них.</div>';
+      }
+
+      function renderAll(){
+        renderCategories();
+        renderMechanics();
+        renderBasic();
+        renderVisual();
+        renderOptions();
+        statusEl.textContent = '';
+      }
+
+      function replacePlaceholders(template, values){
+        return template.replace(/\{([^}]+)\}/g, function(_, key){
+          return values[key] || '';
+        });
+      }
+
+      function itemPrompt(item, scope){
+        const values = {};
+        (item.fields || []).forEach(field => {
+          values[field.key] = fieldValue(scope, item.id, field.key) || field.value || '';
+        });
+        return replacePlaceholders(item.prompt, values);
+      }
+
+      function selectedItems(list, scope){
+        return list
+          .filter(item => itemFits(item, selectedMechanicId))
+          .filter(item => {
+            const checkbox = root.querySelector(`#${CSS.escape(`iy-check-${scope}-${item.id}`)}`);
+            return checkbox && checkbox.checked;
+          });
+      }
+
+      function generatePrompt(){
+        const mech = selectedMechanic();
+        const values = {};
+        mech.fields.forEach(field => values[field.key] = mechanicValue(field.key) || field.value || '');
+        const mechanicText = replacePlaceholders(mech.prompt, values);
+        const selectedFeedback = selectedItems(FEEDBACK, 'feedback');
+        const selectedEngagement = selectedItems(ENGAGEMENT, 'engagement');
+        const extra = extraEl.value.trim();
+
+        const promptParts = [];
+        promptParts.push('Создай интерактивную HTML-игру.');
+        promptParts.push('');
+        promptParts.push('Общие данные:');
+        promptParts.push(`Предмет: ${simpleValue('subject') || 'выбери сам'}.`);
+        promptParts.push(`Класс / возраст: ${simpleValue('grade') || 'выбери сам'}.`);
+        promptParts.push(`Тема: ${simpleValue('topic') || 'выбери тему сам'}.`);
+        promptParts.push(`Язык материала: ${simpleValue('language') || 'русский'}.`);
+        promptParts.push(`Стиль оформления: ${simpleValue('style') || 'подбери самостоятельно'}.`);
+        promptParts.push('');
+        promptParts.push('Визуальное оформление игры:');
+        promptParts.push(`Адаптация оформления: ${simpleValue('visualAdaptation') || 'сильно адаптировать оформление под выбранный стиль'}.`);
+        promptParts.push(`Палитра игры: ${simpleValue('paletteMode') || 'подобрать автоматически под стиль'}.`);
+        if (simpleValue('customPalette')) {
+          promptParts.push(`Пользовательская палитра для игры: ${simpleValue('customPalette')}.`);
+        }
+        promptParts.push(`Фон игры: ${simpleValue('backgroundType') || 'тематический фон'}.`);
+        promptParts.push(`Карточки и кнопки: ${simpleValue('cardStyle') || 'подобрать под стиль'}.`);
+        promptParts.push(`Декор по теме: ${simpleValue('decor') || 'подобрать самостоятельно под стиль и тему урока'}.`);
+        promptParts.push(`Правило по цветам конструктора: ${simpleValue('avoidConstructorColors') || 'не использовать цвета конструктора в самой игре'}.`);
+        promptParts.push('ВАЖНО: оформление игры должно полностью соответствовать выбранному стилю. Не используй одну универсальную цветовую схему для разных игр. Подбери отдельную палитру, фон, карточки, кнопки, декоративные элементы, иллюстрации и атмосферу именно под этот стиль.');
+        promptParts.push('Не ограничивайся изменением цвета кнопок. Стиль должен быть виден во всех элементах: стартовый экран, игровое поле, карточки, кнопки, подсказки, финальный экран, фон, рамки, декоративные детали.');
+        promptParts.push('Не копируй палитру конструктора промптов. Палитра конструктора нужна только для интерфейса выбора, а HTML-игра должна получить собственную CSS-палитру под выбранный стиль.');
+        promptParts.push('Если стиль космический — используй тёмный фон, звёзды, планеты, неоновые элементы. Если стиль пиратский — карту, дерево, сундук, канаты, морские цвета. Если стиль вязаный — мягкие текстуры, нити, клубки, пуговицы, тёплые пастельные цвета. Если стиль лаборатория — колбы, схемы, стекло, светлый фон, научные акценты. Если стиль школьная тетрадь — клетку или линейку, синие чернила, поля, наклейки. Если стиль другой — придумай такую же цельную визуальную систему под него.');
+        promptParts.push('В CSS обязательно создай отдельные переменные оформления для игры: --game-bg, --game-card, --game-primary, --game-accent, --game-text, --game-success, --game-error, --game-muted. Значения этих переменных подбери под выбранный стиль игры.');
+        promptParts.push('');
+        promptParts.push(`Основная механика: ${mech.num}. ${mech.title}.`);
+        promptParts.push(`Кратко: ${mech.short}`);
+        promptParts.push('');
+        promptParts.push(mechanicText);
+
+        if (selectedFeedback.length) {
+          promptParts.push('');
+          promptParts.push('Обратная связь:');
+          selectedFeedback.forEach((item, index) => {
+            promptParts.push(`${index + 1}. ${item.title}. ${itemPrompt(item, 'feedback')}`);
+          });
+        } else {
+          promptParts.push('');
+          promptParts.push('Обратную связь сверх базовой механики не добавляй. Оставь только понятную минимальную реакцию, чтобы игра не выглядела сломанной: действие ученика должно давать ясный результат.');
+        }
+
+        if (selectedEngagement.length) {
+          promptParts.push('');
+          promptParts.push('Механики вовлечения:');
+          selectedEngagement.forEach((item, index) => {
+            promptParts.push(`${index + 1}. ${item.title}. ${itemPrompt(item, 'engagement')}`);
+          });
+        } else {
+          promptParts.push('');
+          promptParts.push('Дополнительные механики вовлечения не добавляй. Не усложняй игру лишними элементами.');
+        }
+
+        if (extra) {
+          promptParts.push('');
+          promptParts.push('Дополнительные условия пользователя:');
+          promptParts.push(extra);
+        }
+
+        promptParts.push('');
+        promptParts.push('Технические требования:');
+        promptParts.push(`Результат: ${simpleValue('format') || 'один готовый HTML-файл со встроенным CSS и JavaScript'}.`);
+        promptParts.push('Сделай код самодостаточным: HTML, CSS и JavaScript в одном файле.');
+        promptParts.push('Не используй внешние библиотеки, если пользователь не попросил отдельно.');
+        promptParts.push('Если нужны изображения и пользователь не дал ссылки, создай простые учебные иллюстрации средствами CSS/SVG внутри HTML.');
+        promptParts.push('Сделай адаптацию под телефон и компьютер: крупные кнопки, читаемый текст, удобные отступы.');
+        promptParts.push('Добавь стартовый экран с названием игры и кнопкой начала.');
+        promptParts.push('Добавь итоговый экран с понятным результатом и кнопкой повторного прохождения.');
+        promptParts.push('Пиши все тексты в игре на языке материала.');
+        promptParts.push('Не объясняй код отдельно, сначала выдай полный готовый HTML-код.');
+
+        outputEl.value = promptParts.join('\n');
+        statusEl.textContent = 'Промпт создан.';
+      }
+
+      function clearAll(){
+        selectedMechanicId = MECHANICS[0].id;
+        activeCategory = 'Все';
+        searchEl.value = '';
+        extraEl.value = '';
+        outputEl.value = '';
+        renderAll();
+        statusEl.textContent = 'Выбор очищен.';
+      }
+
+      categoriesEl.addEventListener('click', (event) => {
+        const btn = event.target.closest('[data-cat]');
+        if (!btn) return;
+        activeCategory = btn.dataset.cat;
+        renderCategories();
+        renderMechanics();
+      });
+
+      mechanicsEl.addEventListener('click', (event) => {
+        const card = event.target.closest('[data-mechanic]');
+        if (!card) return;
+        selectedMechanicId = card.dataset.mechanic;
+        renderMechanics();
+        renderBasic();
+        renderOptions();
+      });
+
+      mechanicsEl.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const card = event.target.closest('[data-mechanic]');
+        if (!card) return;
+        event.preventDefault();
+        selectedMechanicId = card.dataset.mechanic;
+        renderMechanics();
+        renderBasic();
+        renderOptions();
+      });
+
+      searchEl.addEventListener('input', renderMechanics);
+
+      root.addEventListener('change', (event) => {
+        const checkbox = event.target.matches('[data-check]') ? event.target : null;
+        if (!checkbox) return;
+        const option = checkbox.closest('.iy-option');
+        if (option) option.classList.toggle('is-open', checkbox.checked);
+      });
+
+      generateBtn.addEventListener('click', generatePrompt);
+
+      copyBtn.addEventListener('click', async () => {
+        if (!outputEl.value.trim()) {
+          generatePrompt();
+        }
+        outputEl.select();
+        try {
+          await navigator.clipboard.writeText(outputEl.value);
+          statusEl.textContent = 'Промпт скопирован.';
+        } catch (error) {
+          document.execCommand('copy');
+          statusEl.textContent = 'Промпт выделен и скопирован.';
+        }
+      });
+
+      clearBtn.addEventListener('click', clearAll);
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
