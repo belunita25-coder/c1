@@ -106,15 +106,17 @@
               <span class="iy-step">7</span>
               <div>
                 <h2>Готовый промпт</h2>
-                <p class="iy-help">Промпт обновляется сам при любом изменении. Скопируйте его и вставьте в нейросеть.</p>
+                <p class="iy-help">Промпт обновляется сам при каждом изменении. Если очистили поле — нажмите «Создать промпт», чтобы собрать заново.</p>
               </div>
             </div>
           </div>
           <div class="iy-warnings" id="iy-warnings" role="status" aria-live="polite"></div>
           <textarea class="iy-output" id="iy-output" readonly aria-label="Готовый промпт"></textarea>
           <div class="iy-actions">
-            <button class="iy-btn iy-primary" id="iy-copy" type="button">Скопировать промпт</button>
-            <button class="iy-btn iy-secondary" id="iy-download" type="button">Скачать .txt</button>
+            <button class="iy-btn iy-primary" id="iy-generate" type="button">Создать промпт</button>
+            <button class="iy-btn iy-secondary" id="iy-copy" type="button">Скопировать промпт</button>
+            <button class="iy-btn iy-ghost" id="iy-clear-output" type="button">Очистить промпт</button>
+            <button class="iy-btn iy-ghost" id="iy-download" type="button">Скачать .txt</button>
             <button class="iy-btn iy-ghost" id="iy-share" type="button">Ссылка на сборку</button>
             <button class="iy-btn iy-danger" id="iy-clear" type="button">Очистить всё</button>
             <span class="iy-status" id="iy-status" role="status" aria-live="polite"></span>

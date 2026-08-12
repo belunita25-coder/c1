@@ -120,7 +120,21 @@
 
       /* ---------- копирование, скачивание, ссылка ---------- */
 
+      el.generate.addEventListener('click', () => {
+        generateNow();
+        flash('Промпт создан.');
+        el.output.scrollTop = 0;
+      });
+
+      el.clearOutput.addEventListener('click', () => {
+        if (!el.output.value) { flash('Поле промпта уже пустое.', true); return; }
+        clearOutput();
+        flash('Промпт очищен. Настройки сохранены — нажмите «Создать промпт».');
+      });
+
       function copyPrompt(){
+        // если поле очистили, но просят скопировать — собираем заново
+        if (!el.output.value) generateNow();
         const text = el.output.value;
         if (!text) { flash('Промпт пуст.', true); return; }
         const legacy = () => {

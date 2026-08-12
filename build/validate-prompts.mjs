@@ -1,19 +1,12 @@
-import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.html', import.meta.url),'utf8');
-const pick = (n) => { const i=src.indexOf(`const ${n} = [`), s=src.indexOf('[',i);
-  let d=0,j=s,inS=false,e=false,q='';
-  for(;j<src.length;j++){const c=src[j];
-    if(inS){if(e)e=false;else if(c==='\\')e=true;else if(c===q)inS=false;continue;}
-    if(c==='"'||c==="'"){inS=true;q=c;continue;}
-    if(c==='[')d++; if(c===']'){d--;if(d===0){j++;break;}}}
-  return new Function('return '+src.slice(s,j))(); };
-
+import { loadData, fits } from './_load.mjs';
+const D = loadData(new URL('../index.html', import.meta.url));
+const src = D.src;
 // достаём саму функцию fill из файла
 const fi = src.indexOf('function keepSentence');
 const fj = src.indexOf('function blockVal');
 const fill = new Function(src.slice(fi,fj) + '; return fill;')();
 
-const M=pick('MECHANICS'),F=pick('FEEDBACK'),E=pick('ENGAGEMENT');
+const {MECHANICS:M,FEEDBACK:F,ENGAGEMENT:E}=D;
 const all=[...M,...F,...E];
 let problems=0, dropped=0;
 

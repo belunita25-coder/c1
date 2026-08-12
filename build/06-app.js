@@ -17,7 +17,8 @@
         visual: $('iy-visual-fields'), feedback: $('iy-feedback-list'), engagement: $('iy-engagement-list'),
         presets: $('iy-presets'), extraPresets: $('iy-extra-presets'), extra: $('iy-extra'),
         output: $('iy-output'), status: $('iy-status'), warnings: $('iy-warnings'), size: $('iy-size'),
-        copy: $('iy-copy'), download: $('iy-download'), share: $('iy-share'), clear: $('iy-clear'),
+        generate: $('iy-generate'), copy: $('iy-copy'), clearOutput: $('iy-clear-output'),
+        download: $('iy-download'), share: $('iy-share'), clear: $('iy-clear'),
         stickyMech: $('iy-sticky-mech'), stickyMeta: $('iy-sticky-meta'),
         stickyCopy: $('iy-sticky-copy'), stickyTop: $('iy-sticky-top')
       };

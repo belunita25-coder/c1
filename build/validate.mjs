@@ -1,16 +1,7 @@
-import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.html', import.meta.url),'utf8');
-const pick = (n) => {
-  const i = src.indexOf(`const ${n} = [`);
-  const s = src.indexOf('[', i);
-  let d=0,j=s,inStr=false,esc=false,q='';
-  for(;j<src.length;j++){const c=src[j];
-    if(inStr){if(esc)esc=false;else if(c==='\\')esc=true;else if(c===q)inStr=false;continue;}
-    if(c==='"'||c==="'"){inStr=true;q=c;continue;}
-    if(c==='[')d++; if(c===']'){d--;if(d===0){j++;break;}}}
-  return new Function('return ' + src.slice(s,j))();
-};
-const M=pick('MECHANICS'),F=pick('FEEDBACK'),E=pick('ENGAGEMENT'),C=pick('COMMON_FIELDS'),V=pick('VISUAL_FIELDS'),P=pick('PRESETS');
+import { loadData, fits } from './_load.mjs';
+const D = loadData(new URL('../index.html', import.meta.url));
+const src = D.src;
+const {MECHANICS:M,FEEDBACK:F,ENGAGEMENT:E,COMMON_FIELDS:C,VISUAL_FIELDS:V,PRESETS:P,STYLE_LIST,STYLE_RECIPES}=D;
 console.log(`Механик ${M.length} · обратной связи ${F.length} · вовлечения ${E.length} · наборов ${P.length}`);
 
 let bad=0;
@@ -40,7 +31,6 @@ for(const it of [...M,...F,...E,{id:'COMMON',f:C},{id:'VISUAL',f:V}]){
 }
 console.log(bad3? '' : '  дублей нет');
 
-const fits=(it,id)=>!(it.x||[]).includes(id)&&(it.m==='all'||(Array.isArray(it.m)&&it.m.includes(id)));
 console.log('\n4) Покрытие блоками:');
 const rows=M.map(m=>({n:m.num,t:m.title,fb:F.filter(i=>fits(i,m.id)).length,e:E.filter(i=>fits(i,m.id)).length}));
 rows.sort((a,b)=>(a.fb+a.e)-(b.fb+b.e));
@@ -73,3 +63,13 @@ let bad7=0;
 for(const[,it] of all) for(const f of (it.f||[]))
   if(f.t==='txt'&&/например|введите|впишите/i.test(f.v||'')){bad7++;console.log(`  ${it.id}.${f.k} = "${f.v}"`);}
 console.log(bad7? '' : '  ни одного — подсказки только в ph');
+
+console.log('\n8) Стили и рецепты оформления:');
+const noRecipe = STYLE_LIST.filter(s => !STYLE_RECIPES[s]);
+const orphan = Object.keys(STYLE_RECIPES).filter(s => !STYLE_LIST.includes(s));
+console.log(`  стилей в списке: ${STYLE_LIST.length}, рецептов: ${Object.keys(STYLE_RECIPES).length}`);
+if (noRecipe.length) console.log('  БЕЗ РЕЦЕПТА: ' + noRecipe.join(', '));
+if (orphan.length) console.log('  РЕЦЕПТ БЕЗ СТИЛЯ: ' + orphan.join(', '));
+if (!noRecipe.length && !orphan.length) console.log('  у каждого стиля есть рецепт');
+const short = STYLE_LIST.filter(s => (STYLE_RECIPES[s]||'').length < 120);
+if (short.length) console.log('  СЛИШКОМ КОРОТКИЙ РЕЦЕПТ: ' + short.join(', '));
