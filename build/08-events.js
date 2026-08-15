@@ -51,6 +51,17 @@
       // все поля «выбор + своё»
       root.addEventListener('input', (e) => {
         const t = e.target;
+
+        if (t.hasAttribute && t.hasAttribute('data-style-filter')) {
+          state.styleFilter = t.value;
+          const caret = t.selectionStart;
+          el.visual.innerHTML = fieldsHtml('visual', VISUAL_FIELDS);
+          const again = root.querySelector('[data-style-filter]');
+          if (again) { again.focus(); try { again.setSelectionRange(caret, caret); } catch (err) {} }
+          update();
+          return;
+        }
+
         if (!t.dataset || !t.dataset.path || t.dataset.role === 'select') return;
         state.values[t.dataset.path] = t.value;
         update();
@@ -203,6 +214,7 @@
         state.mechanic = MECHANICS[0].id;
         state.category = 'Все';
         state.search = '';
+        state.styleFilter = '';
         state.values = {};
         state.modes = {};
         state.checked = { feedback: [], engagement: [] };

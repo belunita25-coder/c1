@@ -2,7 +2,7 @@
    чтобы работали ссылки вроде o: STYLE_LIST. */
 import fs from 'fs';
 
-const NAMES = ['MECHANICS','FEEDBACK','ENGAGEMENT','COMMON_FIELDS','STYLE_LIST','STYLE_RECIPES','VISUAL_FIELDS','PRESETS','EXTRA_PRESETS'];
+const NAMES = ['MECHANICS','FEEDBACK','ENGAGEMENT','COMMON_FIELDS','STYLE_GROUPS','VISUAL_FIELDS','PRESETS','EXTRA_PRESETS'];
 
 export function loadData(htmlPath){
   const src = fs.readFileSync(htmlPath, 'utf8');
@@ -22,7 +22,14 @@ export function loadData(htmlPath){
     }
     chunks.push(`const ${name} = ${src.slice(open, j)};`);
   }
-  const body = chunks.join('\n') + `\nreturn {${NAMES.join(',')}};`;
+  // STYLE_LIST и STYLE_RECIPES собираются из STYLE_GROUPS в самой странице —
+  // повторяем это здесь, чтобы VISUAL_FIELDS могли на них сослаться
+  const derive = `
+    const STYLE_RECIPES = {}; const STYLE_LIST = [];
+    STYLE_GROUPS.forEach(g => g.items.forEach(([n, r]) => { STYLE_RECIPES[n] = r; STYLE_LIST.push(n); }));`;
+  const i = chunks.findIndex(c => c.startsWith('const STYLE_GROUPS'));
+  chunks.splice(i + 1, 0, derive);
+  const body = chunks.join('\n') + `\nreturn {${NAMES.join(',')},STYLE_LIST,STYLE_RECIPES};`;
   return { src, ...new Function(body)() };
 }
 

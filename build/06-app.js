@@ -27,6 +27,7 @@
         mechanic: MECHANICS[0].id,
         category: 'Все',
         search: '',
+        styleFilter: '',
         values: {},     // path -> строка
         modes: {},      // path -> 'custom', если выбран свой вариант
         checked: { feedback: [], engagement: [] },
@@ -116,10 +117,21 @@
 
         if (field.t === 'sel') {
           const custom = isCustom(path);
-          const opts = (field.o || []).map(o =>
+          let list = field.o || [];
+          let head = '';
+          if (field.filter) {
+            const q = norm(state.styleFilter);
+            const shown = q ? list.filter(o => norm(o).includes(q) || norm(STYLE_RECIPES[o] || '').includes(q)) : list;
+            if (!shown.includes(value) && !custom && value) shown.unshift(value);
+            head = `<input class="iy-search iy-style-filter" type="search" data-style-filter
+                value="${esc(state.styleFilter)}" placeholder="Фильтр по названию или описанию" aria-label="Фильтр стилей" />
+              <span class="iy-style-count">Показано ${shown.length} из ${list.length}</span>`;
+            list = shown;
+          }
+          const opts = list.map(o =>
             `<option value="${esc(o)}"${!custom && o === value ? ' selected' : ''}>${esc(o)}</option>`
           ).join('');
-          return `
+          return `${head}
             <select id="${id}" data-path="${esc(path)}" data-role="select">
               ${opts}
               <option value="${CUSTOM}"${custom ? ' selected' : ''}>${CUSTOM_LABEL}</option>

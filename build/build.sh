@@ -6,6 +6,7 @@ cat build/01-head.html \
     build/02-body.html \
     build/03-mechanics.js \
     build/04-blocks.js \
+    build/05a-styles.js \
     build/05-fields.js \
     build/06-app.js \
     build/07-prompt.js \

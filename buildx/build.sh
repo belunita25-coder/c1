@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
   cat buildx/x03b-stage-prompts.js
   printf '\n'
   sed -n '/^      const FEEDBACK = \[/,$p' build/04-blocks.js
-  cat buildx/x05a-styles.js
+  cat build/05a-styles.js
   cat buildx/x05b-fields.js
   cat buildx/x06-app.js
   cat buildx/x07-prompt.js
