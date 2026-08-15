@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Конструктор промптов для сложных HTML-игр</title>
+  <style>
+    :root {
+      --iy-dark: #4C2670;
+      --iy-bg: #F4F1FA;
+      --iy-accent: #FFC845;
+      --iy-text: #1F1F1F;
+      --iy-lilac: #C6A5E1;
+      --iy-white: #ffffff;
+      --iy-border: rgba(76, 38, 112, .18);
+      --iy-shadow: 0 18px 42px rgba(76, 38, 112, .16);
+      --iy-radius: 22px;
+    }
+
+    #complex-prompt-constructor-iy,
+    #complex-prompt-constructor-iy * {
+      box-sizing: border-box;
+    }
+
+    #complex-prompt-constructor-iy {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--iy-text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 200, 69, .32), transparent 31%),
+        radial-gradient(circle at bottom right, rgba(198, 165, 225, .65), transparent 34%),
+        linear-gradient(180deg, #fbf9ff 0%, var(--iy-bg) 100%);
+      padding: clamp(16px, 3vw, 38px);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    #complex-prompt-constructor-iy .iy-shell {
+      width: min(1240px, 100%);
+      margin: 0 auto;
+    }
+
+    #complex-prompt-constructor-iy .iy-hero {
+      background: linear-gradient(135deg, var(--iy-dark), #6A3A93 58%, #7B4BA4);
+      color: var(--iy-white);
+      border-radius: 30px;
+      padding: clamp(22px, 4vw, 42px);
+      box-shadow: var(--iy-shadow);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    #complex-prompt-constructor-iy .iy-hero::before {
+      content: "";
+      position: absolute;
+      inset: -140px auto auto -100px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(198, 165, 225, .38);
+      z-index: -1;
+    }
+
+    #complex-prompt-constructor-iy .iy-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -90px -115px auto;
+      width: 300px;
+      height: 300px;
+      background: var(--iy-accent);
+      border-radius: 50%;
+      opacity: .34;
+      z-index: -1;
+    }
+
+    #complex-prompt-constructor-iy h1,
+    #complex-prompt-constructor-iy h2,
+    #complex-prompt-constructor-iy h3 {
+      margin: 0;
+      line-height: 1.16;
+    }
+
+    #complex-prompt-constructor-iy h1 {
+      max-width: 900px;
+      font-size: clamp(27px, 5vw, 52px);
+      letter-spacing: -.035em;
+    }
+
+    #complex-prompt-constructor-iy .iy-hero p {
+      max-width: 800px;
+      font-size: clamp(16px, 2vw, 19px);
+      margin: 16px 0 0;
+      opacity: .94;
+    }
+
+    #complex-prompt-constructor-iy .iy-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 200, 69, .18);
+      color: var(--iy-accent);
+      border: 1px solid rgba(255, 200, 69, .55);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    #complex-prompt-constructor-iy .iy-section {
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--iy-border);
+      border-radius: var(--iy-radius);
+      padding: clamp(18px, 3vw, 28px);
+      box-shadow: 0 12px 30px rgba(76, 38, 112, .08);
+      backdrop-filter: blur(10px);
+    }
+
+    #complex-prompt-constructor-iy .iy-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    #complex-prompt-constructor-iy .iy-section-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    #complex-prompt-constructor-iy .iy-step {
+      min-width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: var(--iy-accent);
+      color: var(--iy-text);
+      font-weight: 900;
+      box-shadow: 0 8px 0 rgba(76, 38, 112, .14);
+    }
+
+    #complex-prompt-constructor-iy .iy-section-title h2 {
+      color: var(--iy-dark);
+      font-size: clamp(21px, 3vw, 30px);
+    }
+
+    #complex-prompt-constructor-iy .iy-help {
+      color: rgba(31, 31, 31, .72);
+      margin: 8px 0 0;
+      font-size: 15px;
+    }
+
+    #complex-prompt-constructor-iy .iy-note {
+      background: rgba(255, 200, 69, .2);
+      border: 1px solid rgba(255, 200, 69, .8);
+      border-radius: 16px;
+      padding: 14px;
+      color: var(--iy-dark);
+      font-weight: 800;
+      margin-top: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    #complex-prompt-constructor-iy label {
+      font-weight: 900;
+      color: var(--iy-dark);
+      font-size: 14px;
+    }
+
+    #complex-prompt-constructor-iy input,
+    #complex-prompt-constructor-iy select,
+    #complex-prompt-constructor-iy textarea {
+      width: 100%;
+      border: 2px solid rgba(76, 38, 112, .15);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--iy-text);
+      outline: none;
+      transition: .18s ease;
+    }
+
+    #complex-prompt-constructor-iy textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    #complex-prompt-constructor-iy .iy-small {
+      font-size: 13px;
+      color: rgba(31,31,31,.65);
+    }
+
+    #complex-prompt-constructor-iy .iy-style-combo {
+      display: grid;
+      gap: 8px;
+    }
+
+    #complex-prompt-constructor-iy .iy-style-custom {
+      margin-top: 0;
+    }
+
+    #complex-prompt-constructor-iy .iy-search:focus,
+    #complex-prompt-constructor-iy input:focus,
+    #complex-prompt-constructor-iy select:focus,
+    #complex-prompt-constructor-iy textarea:focus {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .23);
+    }
+
+    #complex-prompt-constructor-iy .iy-tools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    #complex-prompt-constructor-iy .iy-search {
+      width: min(320px, 100%);
+      border: 2px solid rgba(76, 38, 112, .16);
+      background: var(--iy-white);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    #complex-prompt-constructor-iy .iy-count-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 10px 13px;
+      background: rgba(76, 38, 112, .09);
+      color: var(--iy-dark);
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    #complex-prompt-constructor-iy .iy-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    #complex-prompt-constructor-iy .iy-chip {
+      border: 1px solid var(--iy-border);
+      background: #fff;
+      color: var(--iy-dark);
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: .18s ease;
+      font-family: inherit;
+    }
+
+    #complex-prompt-constructor-iy .iy-chip:hover,
+    #complex-prompt-constructor-iy .iy-chip.is-active {
+      background: var(--iy-dark);
+      color: var(--iy-white);
+      transform: translateY(-1px);
+    }
+
+    #complex-prompt-constructor-iy .iy-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-card {
+      border: 2px solid rgba(76, 38, 112, .12);
+      background: linear-gradient(180deg, #fff, #fbf9ff);
+      border-radius: 18px;
+      padding: 16px;
+      cursor: pointer;
+      min-height: 174px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: .2s ease;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    #complex-prompt-constructor-iy .iy-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(76, 38, 112, .12);
+      border-color: rgba(76, 38, 112, .3);
+    }
+
+    #complex-prompt-constructor-iy .iy-card.is-selected {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .22), 0 16px 34px rgba(76, 38, 112, .15);
+      background: linear-gradient(180deg, #fffaf0, #fff);
+    }
+
+    #complex-prompt-constructor-iy .iy-card.is-disabled {
+      opacity: .48;
+      cursor: not-allowed;
+    }
+
+    #complex-prompt-constructor-iy .iy-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    #complex-prompt-constructor-iy .iy-card-number,
+    #complex-prompt-constructor-iy .iy-selected-number {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 14px;
+      flex: 0 0 auto;
+    }
+
+    #complex-prompt-constructor-iy .iy-card-number {
+      color: var(--iy-white);
+      background: var(--iy-dark);
+    }
+
+    #complex-prompt-constructor-iy .iy-selected-number {
+      color: var(--iy-text);
+      background: var(--iy-accent);
+      box-shadow: 0 5px 0 rgba(76, 38, 112, .14);
+    }
+
+    #complex-prompt-constructor-iy .iy-card h3 {
+      color: var(--iy-dark);
+      font-size: 17px;
+    }
+
+    #complex-prompt-constructor-iy .iy-card p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(31,31,31,.76);
+    }
+
+    #complex-prompt-constructor-iy .iy-meta {
+      margin-top: auto;
+      display: inline-flex;
+      color: var(--iy-dark);
+      background: rgba(198, 165, 225, .25);
+      border: 1px solid rgba(198, 165, 225, .5);
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      width: fit-content;
+    }
+
+    #complex-prompt-constructor-iy .iy-stages {
+      display: grid;
+      gap: 16px;
+    }
+
+    #complex-prompt-constructor-iy .iy-stage {
+      border: 2px solid rgba(76, 38, 112, .14);
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff, #fbf9ff);
+      overflow: hidden;
+    }
+
+    #complex-prompt-constructor-iy .iy-stage-head {
+      padding: 16px;
+      background: rgba(198, 165, 225, .18);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(76, 38, 112, .1);
+    }
+
+    #complex-prompt-constructor-iy .iy-stage-title {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    #complex-prompt-constructor-iy .iy-stage-index {
+      min-width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--iy-dark);
+      color: var(--iy-white);
+      font-weight: 900;
+    }
+
+    #complex-prompt-constructor-iy .iy-stage h3 {
+      color: var(--iy-dark);
+      font-size: 20px;
+      margin-top: 1px;
+    }
+
+    #complex-prompt-constructor-iy .iy-stage p {
+      margin: 6px 0 0;
+      color: rgba(31,31,31,.72);
+      font-size: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-stage-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    #complex-prompt-constructor-iy .iy-mini-btn {
+      border: 1px solid rgba(76, 38, 112, .18);
+      background: #fff;
+      color: var(--iy-dark);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    #complex-prompt-constructor-iy .iy-mini-btn:hover {
+      border-color: var(--iy-accent);
+      box-shadow: 0 0 0 3px rgba(255, 200, 69, .2);
+    }
+
+    #complex-prompt-constructor-iy .iy-stage-body {
+      padding: 16px;
+      display: grid;
+      gap: 18px;
+    }
+
+    #complex-prompt-constructor-iy .iy-subblock {
+      border-top: 1px dashed rgba(76, 38, 112, .2);
+      padding-top: 16px;
+    }
+
+    #complex-prompt-constructor-iy .iy-subblock:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    #complex-prompt-constructor-iy .iy-subtitle {
+      color: var(--iy-dark);
+      font-weight: 900;
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    #complex-prompt-constructor-iy .iy-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #complex-prompt-constructor-iy .iy-option {
+      border: 2px solid rgba(76, 38, 112, .13);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+      transition: .18s ease;
+    }
+
+    #complex-prompt-constructor-iy .iy-option.is-open {
+      border-color: rgba(255, 200, 69, .85);
+      box-shadow: 0 0 0 4px rgba(255, 200, 69, .15);
+    }
+
+    #complex-prompt-constructor-iy .iy-option-head {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    #complex-prompt-constructor-iy .iy-option-head input {
+      width: 19px;
+      min-width: 19px;
+      height: 19px;
+      margin-top: 2px;
+      accent-color: var(--iy-dark);
+      box-shadow: none;
+      padding: 0;
+    }
+
+    #complex-prompt-constructor-iy .iy-option-title {
+      font-weight: 900;
+      color: var(--iy-dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    #complex-prompt-constructor-iy .iy-option-desc {
+      display: block;
+      color: rgba(31,31,31,.7);
+      font-size: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-option-fields {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(76, 38, 112, .18);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    #complex-prompt-constructor-iy .iy-option.is-open .iy-option-fields {
+      display: grid;
+    }
+
+    #complex-prompt-constructor-iy .iy-empty {
+      border: 1px dashed rgba(76, 38, 112, .28);
+      background: rgba(255,255,255,.62);
+      border-radius: 16px;
+      padding: 16px;
+      color: rgba(31,31,31,.68);
+    }
+
+    #complex-prompt-constructor-iy .iy-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    #complex-prompt-constructor-iy button.iy-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 15px;
+      font-family: inherit;
+      transition: .18s ease;
+    }
+
+    #complex-prompt-constructor-iy .iy-primary {
+      background: var(--iy-accent);
+      color: var(--iy-text);
+      box-shadow: 0 8px 0 rgba(76, 38, 112, .22);
+    }
+
+    #complex-prompt-constructor-iy .iy-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 0 rgba(76, 38, 112, .22);
+    }
+
+    #complex-prompt-constructor-iy .iy-secondary {
+      background: var(--iy-dark);
+      color: var(--iy-white);
+    }
+
+    #complex-prompt-constructor-iy .iy-ghost {
+      background: #fff;
+      color: var(--iy-dark);
+      border: 2px solid rgba(76, 38, 112, .18) !important;
+    }
+
+    #complex-prompt-constructor-iy .iy-output {
+      min-height: 430px;
+      font-family: Arial, Helvetica, sans-serif;
+      white-space: pre-wrap;
+    }
+
+    #complex-prompt-constructor-iy .iy-status {
+      min-height: 22px;
+      color: var(--iy-dark);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    #complex-prompt-constructor-iy .iy-status.is-error {
+      color: #8a1c1c;
+    }
+
+    @media (max-width: 980px) {
+      #complex-prompt-constructor-iy .iy-cards,
+      #complex-prompt-constructor-iy .iy-options,
+      #complex-prompt-constructor-iy .iy-form-grid {
+        grid-template-columns: 1fr;
+      }
+      #complex-prompt-constructor-iy .iy-section-head,
+      #complex-prompt-constructor-iy .iy-stage-head {
+        flex-direction: column;
+      }
+      #complex-prompt-constructor-iy .iy-tools {
+        width: 100%;
+        justify-content: stretch;
+      }
+      #complex-prompt-constructor-iy .iy-search {
+        width: 100%;
+      }
+      #complex-prompt-constructor-iy .iy-stage-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 540px) {
+      #complex-prompt-constructor-iy {
+        padding: 12px;
+      }
+      #complex-prompt-constructor-iy .iy-hero {
+        border-radius: 22px;
+      }
+      #complex-prompt-constructor-iy .iy-section {
+        padding: 16px;
+      }
+      #complex-prompt-constructor-iy .iy-option-fields {
+        grid-template-columns: 1fr;
+      }
+      #complex-prompt-constructor-iy button.iy-btn {
+        width: 100%;
+      }
+    }
+
+    /* ===== дополнения: доступность, «выбор + своё», панели, предупреждения ===== */
+
+    html, body { margin: 0; padding: 0; }
+
+    #complex-prompt-constructor-iy {
+      min-height: 100dvh;
+      padding-bottom: 120px;
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    #complex-prompt-constructor-iy .iy-section { scroll-margin-top: 16px; }
+
+    #complex-prompt-constructor-iy .iy-card:focus-visible,
+    #complex-prompt-constructor-iy .iy-chip:focus-visible,
+    #complex-prompt-constructor-iy .iy-btn:focus-visible,
+    #complex-prompt-constructor-iy .iy-mini-btn:focus-visible,
+    #complex-prompt-constructor-iy .iy-preset:focus-visible,
+    #complex-prompt-constructor-iy input:focus-visible,
+    #complex-prompt-constructor-iy select:focus-visible,
+    #complex-prompt-constructor-iy textarea:focus-visible {
+      outline: 3px solid var(--iy-dark);
+      outline-offset: 2px;
+    }
+
+    #complex-prompt-constructor-iy .iy-card[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+      filter: grayscale(.4);
+    }
+    #complex-prompt-constructor-iy .iy-card[disabled]:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: rgba(76, 38, 112, .12);
+    }
+
+    /* «выбор + вписать своё» */
+    #complex-prompt-constructor-iy .iy-custom { display: none; margin-top: 7px; }
+    #complex-prompt-constructor-iy .iy-custom.is-on { display: block; }
+    #complex-prompt-constructor-iy .iy-custom input {
+      border-color: var(--iy-accent);
+      background: #FFFDF7;
+    }
+    #complex-prompt-constructor-iy .iy-own-tag {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: #9A5B00;
+      margin-bottom: 4px;
+    }
+    #complex-prompt-constructor-iy .iy-combo-note {
+      font-size: 12px;
+      color: rgba(31,31,31,.6);
+      margin-top: 2px;
+    }
+
+    /* фильтр стилей */
+    #complex-prompt-constructor-iy .iy-style-filter { margin-bottom: 0; }
+    #complex-prompt-constructor-iy .iy-style-count {
+      font-size: 12px;
+      color: rgba(31,31,31,.6);
+    }
+
+    /* готовые наборы */
+    #complex-prompt-constructor-iy .iy-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    #complex-prompt-constructor-iy .iy-preset {
+      border: 2px solid rgba(76, 38, 112, .16);
+      background: #fff;
+      color: var(--iy-dark);
+      border-radius: 14px;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      font-family: inherit;
+      transition: .18s ease;
+    }
+    #complex-prompt-constructor-iy .iy-preset:hover {
+      background: var(--iy-lilac);
+      border-color: var(--iy-dark);
+    }
+
+    /* предупреждения */
+    #complex-prompt-constructor-iy .iy-warnings {
+      display: none;
+      background: #FFF4DC;
+      border: 2px solid rgba(255, 200, 69, .9);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    #complex-prompt-constructor-iy .iy-warnings.is-on { display: block; }
+    #complex-prompt-constructor-iy .iy-warnings b {
+      color: #9A5B00;
+      display: block;
+      margin-bottom: 6px;
+    }
+    #complex-prompt-constructor-iy .iy-warnings ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 14px;
+      font-weight: 400;
+    }
+    #complex-prompt-constructor-iy .iy-warnings li { margin: 3px 0; }
+
+    /* сообщение рядом с действием */
+    #complex-prompt-constructor-iy .iy-inline-status {
+      min-height: 0;
+      margin: 0 0 14px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--iy-dark);
+      display: none;
+    }
+    #complex-prompt-constructor-iy .iy-inline-status.is-on { display: block; }
+    #complex-prompt-constructor-iy .iy-inline-status.is-error { color: #8a1c1c; }
+
+    /* сводка выбранного */
+    #complex-prompt-constructor-iy .iy-summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--iy-dark), #6A3A93);
+      color: var(--iy-white);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    #complex-prompt-constructor-iy .iy-summary b { color: var(--iy-accent); }
+
+    /* действия этапа */
+    #complex-prompt-constructor-iy .iy-mini-btn[disabled] {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+    #complex-prompt-constructor-iy .iy-stage-note {
+      font-size: 13px;
+      color: rgba(31,31,31,.66);
+      margin: 0 0 10px;
+    }
+
+    /* закреплённая панель снизу */
+    #complex-prompt-constructor-iy .iy-sticky {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 40;
+      background: rgba(255,255,255,.97);
+      border-top: 2px solid var(--iy-border);
+      box-shadow: 0 -8px 24px rgba(76, 38, 112, .12);
+      padding: 10px clamp(12px, 3vw, 24px);
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+    #complex-prompt-constructor-iy .iy-sticky-in {
+      width: min(1240px, 100%);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    #complex-prompt-constructor-iy .iy-sticky-text {
+      flex: 1 1 200px;
+      min-width: 0;
+      font-size: 13px;
+      color: rgba(31,31,31,.8);
+      font-weight: 700;
+    }
+    #complex-prompt-constructor-iy .iy-sticky-text b {
+      color: var(--iy-dark);
+      display: block;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #complex-prompt-constructor-iy .iy-sticky button {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 540px) {
+      #complex-prompt-constructor-iy { padding-bottom: 140px; }
+      #complex-prompt-constructor-iy .iy-hero h1 { font-size: 26px; }
+      #complex-prompt-constructor-iy .iy-hero p { font-size: 15px; margin-top: 10px; }
+      #complex-prompt-constructor-iy .iy-output { min-height: 260px; }
+      #complex-prompt-constructor-iy .iy-sticky { padding: 8px 12px; }
+      #complex-prompt-constructor-iy .iy-sticky-text { flex: 1 1 100%; }
+      #complex-prompt-constructor-iy #iy-sticky-meta { display: none; }
+      #complex-prompt-constructor-iy .iy-sticky button { flex: 1 1 0; padding: 12px 6px; font-size: 13px; }
+      #complex-prompt-constructor-iy .iy-actions button.iy-btn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #complex-prompt-constructor-iy *,
+      #complex-prompt-constructor-iy *::before,
+      #complex-prompt-constructor-iy *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+      #complex-prompt-constructor-iy .iy-card:hover,
+      #complex-prompt-constructor-iy .iy-chip:hover,
+      #complex-prompt-constructor-iy .iy-primary:hover { transform: none; }
+    }
+  </style>
+</head>
