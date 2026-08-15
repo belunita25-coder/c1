@@ -11,13 +11,13 @@ for fn, what in [
     ('x01-head.html', 'Стили оформления конструктора'),
     ('x02-body.html', 'Разметка: семь шагов и нижняя панель'),
     ('x03b-stage-prompts.js', 'Тексты 32 механик в роли этапа'),
-    ('x05a-styles.js', '130 стилей оформления с рецептами'),
+    ('05a-styles.js', '130 стилей оформления с рецептами'),
     ('x05b-fields.js', 'Уровни блоков, общие поля, готовые наборы'),
     ('x06-app.js', 'Состояние этапов и отрисовка'),
     ('x07-prompt.js', 'Сборка промпта и проверки перед выдачей'),
     ('x08-events.js', 'События, копирование настроек, кнопки'),
 ]:
-    p = '/home/user/c1/buildx/' + fn
+    p = ('/home/user/c1/build/' if fn.startswith('05a') else '/home/user/c1/buildx/') + fn
     n = io.open(p, encoding='utf-8').read().count('\n') + 1
     frag_rows.append(
         f'<tr><td><code>{fn}</code></td><td>{what}</td><td class="num">{n}</td></tr>'
